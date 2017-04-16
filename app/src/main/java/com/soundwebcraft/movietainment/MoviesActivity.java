@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -45,6 +47,14 @@ public class MoviesActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(adapter);
         fetchMovies(1, null);
+    }
+
+    // add movies menu to activity
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.movies_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     void fetchMovies(int page, String sort) {
