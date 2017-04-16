@@ -10,6 +10,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -68,6 +69,29 @@ public class MoviesActivity extends AppCompatActivity {
         inflater.inflate(R.menu.movies_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+    // load movies by sort criteria
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.by_popularity:
+                resetEndlessScroll();
+                fetchMovies(1, getString(R.string.by_popularity));
+                return true;
+            case R.id.by_ratings:
+                resetEndlessScroll();
+                fetchMovies(1, getString(R.string.by_ratings));
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void resetEndlessScroll() {
+        allMovies.clear();
+        adapter.notifyDataSetChanged();
+        scrollListener.resetState();
+    }
+
 
     void fetchMovies(int page, String sort) {
         if (isConnected()) {
