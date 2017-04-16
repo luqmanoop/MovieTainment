@@ -1,10 +1,14 @@
 package com.soundwebcraft.movietainment;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -44,39 +48,53 @@ public class MoviesActivity extends AppCompatActivity {
     }
 
     void fetchMovies(int page, String sort) {
-        AndroidNetworking.get(TMDB.buildMoviesURL(sort))
-                .setPriority(Priority.HIGH)
-                .addQueryParameter("page", String.valueOf(page))
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        List<Movie> movieList = new ArrayList<Movie>();
-                        try {
-                            JSONArray res = response.getJSONArray("results");
-                            int total = res.length();
-                            Log.d(TAG, "" + total);
-                            for (int i = 0; i < total; i++) {
-                                JSONObject movieObj = (JSONObject) res.get(i);
-                                movieList.add(new Movie(
-                                        movieObj.getString("original_title"),
-                                        movieObj.getString("poster_path"),
-                                        movieObj.getInt("id")
-                                ));
-                                Log.d(TAG, movieObj.getString("poster_path"));
+        if (isConnected()) {
+            AndroidNetworking.get(TMDB.buildMoviesURL(sort))
+                    .setPriority(Priority.HIGH)
+                    .addQueryParameter("page", String.valueOf(page))
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            List<Movie> movieList = new ArrayList<Movie>();
+                            try {
+                                JSONArray res = response.getJSONArray("results");
+                                int total = res.length();
+                                Log.d(TAG, "" + total);
+                                for (int i = 0; i < total; i++) {
+                                    JSONObject movieObj = (JSONObject) res.get(i);
+                                    movieList.add(new Movie(
+                                            movieObj.getString("original_title"),
+                                            movieObj.getString("poster_path"),
+                                            movieObj.getInt("id")
+                                    ));
+                                    Log.d(TAG, movieObj.getString("poster_path"));
+                                }
+                                allMovies.addAll(movieList);
+                                int size = adapter.getItemCount();
+                                Log.d(TAG, allMovies.size() + "");
+                                adapter.notifyItemRangeInserted(size, allMovies.size() - 1);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            allMovies.addAll(movieList);
-                            int size = adapter.getItemCount();
-                            Log.d(TAG, allMovies.size() + "");
-                            adapter.notifyItemRangeInserted(size, allMovies.size() - 1);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
-                    @Override
-                    public void onError(ANError anError) {
-                        anError.getMessage();
-                    }
-                });
+
+                        @Override
+                        public void onError(ANError anError) {
+                            anError.getMessage();
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "Internet apppears to be offline", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // check if connection is available
+    boolean isConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }
