@@ -1,5 +1,8 @@
 package com.soundwebcraft.movietainment.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Movie {
 
     // fields
@@ -14,6 +17,12 @@ public class Movie {
 
 
     // constructors
+    // useful for testing model with dummy data
+    public Movie(String title) {
+        original_title = title;
+    }
+
+
     public Movie(String original_title, String poster_path, String overview, double vote_average, String release_date) {
         this.original_title = original_title;
         this.poster_path = poster_path;
@@ -32,7 +41,6 @@ public class Movie {
         this.id = id;
         this.imdb_id = imdb_id;
     }
-
 
     // getters
     public String getOriginalTitle() {
@@ -59,6 +67,13 @@ public class Movie {
         return imdb_id;
     }
 
+    public static List<Movie> loadDummyMoviesData () {
+        List<Movie> movies = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            movies.add(new Movie("TBT Season " + (i + 1)));
+        }
+        return movies;
+    }
     // toString override
     @Override
     public String toString() {
