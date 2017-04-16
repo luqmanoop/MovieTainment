@@ -74,7 +74,7 @@ public abstract class TMDB {
 
     }
 
-    public static boolean isConnected(Context context) {
+    public static boolean isDeviceConnected(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
