@@ -140,4 +140,41 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
     }
 
+    public void shareMovie(View view) {
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+
+        String caption = "Check out this awesome movie!";
+        String title = "*" + movieTitle + "*";
+        // if we cant get the movie imdb id for url preview then use movie overview
+        String previewOrOverview = "";
+        String movieReleasedDate = "";
+        String movieRatings = "";
+        if (imdb_id != null) {
+            previewOrOverview = IMDB_MOVIE_PREVIEW + imdb_id;
+        } else {
+            previewOrOverview = overview.getText().toString();
+            movieReleasedDate = "Released: " + released.getText().toString() + "\n";
+            movieRatings = "Ratings: " + ratings.getText().toString() + "\n";
+        }
+
+        String hashTags = "*#Andela #Udacity #Google #MovieApp*";
+        String withLove = "Made with love by *@luksy_breezy*";
+
+        String shareBody = caption + "\n\n" +
+                title + "\n" +
+                previewOrOverview + "\n" +
+                movieReleasedDate +
+                movieRatings +
+                hashTags + "\n" +
+                withLove;
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+
+        // prevent activity we are sharing to from being placed onto the activity stack
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        }
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+    }
 }
