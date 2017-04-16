@@ -72,13 +72,30 @@ public class Movie {
         return imdb_id;
     }
 
-    public static List<Movie> loadDummyMoviesData () {
+    public static List<Movie> loadDummyMoviesData() {
         List<Movie> movies = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             movies.add(new Movie("TBT Season " + (i + 1)));
         }
         return movies;
     }
+
+    // get movie poster: low res default
+    public String getPoster() {
+        return MOVIE_POSTER_BASE_URL + POSTER_SIZE_SM + getPosterPath();
+    }
+
+    // get movie poster: true = high res
+    public String getPoster(boolean highRes) {
+        String url = null;
+        if (highRes) {
+            url = MOVIE_POSTER_BASE_URL + POSTER_SIZE_BG + getPosterPath();
+        } else {
+            url = MOVIE_POSTER_BASE_URL + POSTER_SIZE_SM + getPosterPath();
+        }
+        return url;
+    }
+
     // toString override
     @Override
     public String toString() {
