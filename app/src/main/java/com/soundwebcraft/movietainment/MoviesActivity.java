@@ -18,6 +18,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.soundwebcraft.movietainment.adapters.MoviesAdapter;
 import com.soundwebcraft.movietainment.models.Movie;
+import com.soundwebcraft.movietainment.utils.EndlessRecyclerViewScrollListener;
 import com.soundwebcraft.movietainment.utils.TMDB;
 
 import org.json.JSONArray;
@@ -31,6 +32,8 @@ public class MoviesActivity extends AppCompatActivity {
     public static final String TAG = MoviesActivity.class.getSimpleName();
     final List<Movie> allMovies = new ArrayList<>();
     private MoviesAdapter adapter;
+    // hold reference to scrollListener
+    EndlessRecyclerViewScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,15 @@ public class MoviesActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(adapter);
         fetchMovies(1, null);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                fetchMovies(page + 1, null);
+            }
+        };
+        // listen for scroll
+        recyclerView.addOnScrollListener(scrollListener);
     }
 
     // add movies menu to activity
