@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">MovieTainment</string>
+
+    <!--app strings-->
     <string name="mv_description">movie poster</string>
+    <string name="by_popularity">popularity</string>
+    <string name="by_ratings">ratings</string>
 </resources>
