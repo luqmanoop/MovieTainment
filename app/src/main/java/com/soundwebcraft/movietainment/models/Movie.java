@@ -27,6 +27,11 @@ public class Movie {
         original_title = title;
     }
 
+    public Movie(String original_title, String poster_path, int id) {
+        this.original_title = original_title;
+        this.poster_path = poster_path;
+        this.id = id;
+    }
 
     public Movie(String original_title, String poster_path, String overview, double vote_average, String release_date) {
         this.original_title = original_title;
