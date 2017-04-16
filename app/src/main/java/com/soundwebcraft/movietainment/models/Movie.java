@@ -68,6 +68,10 @@ public class Movie {
         return release_date;
     }
 
+    public int getID() {
+        return id;
+    }
+
     public String getImdb_id() {
         return imdb_id;
     }
