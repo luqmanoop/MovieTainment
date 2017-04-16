@@ -1,10 +1,13 @@
 package com.soundwebcraft.movietainment.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 
 import com.soundwebcraft.movietainment.BuildConfig;
 
-public class TMDB {
+public abstract class TMDB {
     // TmDB api base url
     private static final String API_BASE_URL = "https://api.themoviedb.org/3/";
     // TmDB API KEY
@@ -69,5 +72,13 @@ public class TMDB {
                 .build()
                 .toString();
 
+    }
+
+    public static boolean isConnected(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }
