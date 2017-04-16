@@ -5,4 +5,5 @@
     <string name="mv_description">movie poster</string>
     <string name="by_popularity">popularity</string>
     <string name="by_ratings">ratings</string>
+    <string name="overview">Overview</string>
 </resources>
