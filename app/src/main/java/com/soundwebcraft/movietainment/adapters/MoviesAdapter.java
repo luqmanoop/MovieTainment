@@ -1,6 +1,8 @@
 package com.soundwebcraft.movietainment.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundwebcraft.movietainment.MovieDetailActivity;
 import com.soundwebcraft.movietainment.R;
 import com.soundwebcraft.movietainment.models.Movie;
 import com.squareup.picasso.Picasso;
@@ -80,6 +83,27 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             titleTextView = (TextView) itemView.findViewById(R.id.tv_item_movie);
             posterImage = (ImageView) itemView.findViewById(R.id.movie_poster);
             movieIDTextView = (TextView) itemView.findViewById(R.id.movie_id);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    int movieId = mMovies.get(position).getID();
+                    String highResPoster = mMovies.get(position).getPoster(true);
+                    String movieTitle = mMovies.get(position).getOriginalTitle();
+
+                    Intent intent = new Intent(mContext, MovieDetailActivity.class);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(MOVIE_ID, movieId);
+                    // send poster (high res) url to detail activity for fast loading (doesn't wait for getting movie clicked)
+                    bundle.putString(HIGH_RES_POSTER, highResPoster);
+                    bundle.putString(MOVIE_TITLE, movieTitle);
+                    intent.putExtras(bundle);
+
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 }
