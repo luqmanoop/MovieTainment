@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -110,34 +111,38 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     void fetchMovie(String url) {
-        AndroidNetworking.get(url)
-                .setPriority(Priority.MEDIUM)
-                .build()
-                .getAsObject(Movie.class, new ParsedRequestListener<Movie>() {
-                    @Override
-                    public void onResponse(Movie response) {
-                        ovTitle.setText(getString(R.string.overview));
-                        overview.setText(response.getOverview());
-                        String rd = "Released: " + response.getReleaseDate();
-                        released.setText(rd);
-                        String rt = "Ratings: " + response.getVoteAverage() + "/10";
-                        ratings.setText(rt);
+        if (TMDB.isDeviceConnected(this)) {
+            AndroidNetworking.get(url)
+                    .setPriority(Priority.MEDIUM)
+                    .build()
+                    .getAsObject(Movie.class, new ParsedRequestListener<Movie>() {
+                        @Override
+                        public void onResponse(Movie response) {
+                            ovTitle.setText(getString(R.string.overview));
+                            overview.setText(response.getOverview());
+                            String rd = "Released: " + response.getReleaseDate();
+                            released.setText(rd);
+                            String rt = "Ratings: " + response.getVoteAverage() + "/10";
+                            ratings.setText(rt);
 
-                        // if for some weird reason we didn't get movie poster url from intent
-                        // use url from response
-                        if (moviePoster == null) Picasso.with(context)
-                                .load(response.getPoster(true))
-                                .error(R.drawable.no_preview)
-                                .into(posterImg);
+                            // if for some weird reason we didn't get movie poster url from intent
+                            // use url from response
+                            if (moviePoster == null) Picasso.with(context)
+                                    .load(response.getPoster(true))
+                                    .error(R.drawable.no_preview)
+                                    .into(posterImg);
 
-                        imdb_id = response.getImdb_id();
-                    }
+                            imdb_id = response.getImdb_id();
+                        }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.d(TAG, anError.getMessage());
-                    }
-                });
+                        @Override
+                        public void onError(ANError anError) {
+                            Log.d(TAG, anError.getMessage());
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "Internet apppears to be offline", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void shareMovie(View view) {

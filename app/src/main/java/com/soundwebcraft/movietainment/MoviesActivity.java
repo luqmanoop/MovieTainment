@@ -1,8 +1,5 @@
 package com.soundwebcraft.movietainment;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -94,7 +91,7 @@ public class MoviesActivity extends AppCompatActivity {
 
 
     void fetchMovies(int page, String sort) {
-        if (isConnected()) {
+        if (TMDB.isDeviceConnected(this)) {
             AndroidNetworking.get(TMDB.buildMoviesURL(sort))
                     .setPriority(Priority.HIGH)
                     .addQueryParameter("page", String.valueOf(page))
@@ -133,14 +130,5 @@ public class MoviesActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Internet apppears to be offline", Toast.LENGTH_LONG).show();
         }
-    }
-
-    // check if connection is available
-    boolean isConnected() {
-        ConnectivityManager cm =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }
