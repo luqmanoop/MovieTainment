@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/card_margin"
+        app:cardCornerRadius="@dimen/card_album_radius"
+        app:cardElevation="3dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/movie_poster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:transitionName="poster"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:minHeight="140dp"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/no_preview"
+                tools:targetApi="lollipop"
+                android:contentDescription="@string/mv_description"/>
+
+            <TextView
+                android:id="@+id/tv_item_movie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/movie_poster"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:padding="@dimen/album_title_padding"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                tools:text="Mad Max: Fury"/>
+            <TextView
+                android:id="@+id/movie_id"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/tv_item_movie"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
