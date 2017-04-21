@@ -20,6 +20,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
     public static final String TAG = MoviesAdapter.class.getSimpleName();
     public static final String HIGH_RES_POSTER = "HIGH_RES_POSTER";
@@ -74,15 +77,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
         // hold reference to each views in row for caching
-        TextView titleTextView;
-        ImageView posterImage;
-        TextView movieIDTextView;
+        @BindView(R.id.tv_item_movie) TextView titleTextView;
+        @BindView(R.id.movie_poster) ImageView posterImage;
+        @BindView(R.id.movie_id) TextView movieIDTextView;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            titleTextView = (TextView) itemView.findViewById(R.id.tv_item_movie);
-            posterImage = (ImageView) itemView.findViewById(R.id.movie_poster);
-            movieIDTextView = (TextView) itemView.findViewById(R.id.movie_id);
+            // simplify viewholder findViewById using butterknife
+            ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
