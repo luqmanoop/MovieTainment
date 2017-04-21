@@ -119,9 +119,9 @@ public class MovieDetailActivity extends AppCompatActivity {
                         public void onResponse(Movie response) {
                             ovTitle.setText(getString(R.string.overview));
                             overview.setText(response.getOverview());
-                            String rd = "Released: " + response.getReleaseDate();
+                            String rd = getString(R.string.released) + response.getReleaseDate();
                             released.setText(rd);
-                            String rt = "Ratings: " + response.getVoteAverage() + "/10";
+                            String rt = getString(R.string.ratings) + response.getVoteAverage() + "/10";
                             ratings.setText(rt);
 
                             // if for some weird reason we didn't get movie poster url from intent
@@ -140,7 +140,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Toast.makeText(this, "Internet apppears to be offline", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.no_connection_msg), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -148,7 +148,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
 
-        String caption = "Check out this awesome movie!";
+        String caption = getString(R.string.share_movie_caption);
         String title = "*" + movieTitle + "*";
         // if we cant get the movie imdb id for url preview then use movie overview
         String previewOrOverview = "";
@@ -158,12 +158,12 @@ public class MovieDetailActivity extends AppCompatActivity {
             previewOrOverview = IMDB_MOVIE_PREVIEW + imdb_id;
         } else {
             previewOrOverview = overview.getText().toString();
-            movieReleasedDate = "Released: " + released.getText().toString() + "\n";
-            movieRatings = "Ratings: " + ratings.getText().toString() + "\n";
+            movieReleasedDate = getString(R.string.released) + released.getText().toString() + "\n";
+            movieRatings = getString(R.string.ratings) + ratings.getText().toString() + "\n";
         }
 
-        String hashTags = "*#Andela #Udacity #Google #MovieApp*";
-        String withLove = "Made with love by *@luksy_breezy*";
+        String hashTags = getString(R.string.share_movie_hashtags);
+        String withLove = getString(R.string.share_movie_developer);
 
         String shareBody = caption + "\n\n" +
                 title + "\n" +
@@ -179,6 +179,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         }
-        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+        startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_intent_title)));
     }
 }

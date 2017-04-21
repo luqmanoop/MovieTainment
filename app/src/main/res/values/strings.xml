@@ -6,4 +6,15 @@
     <string name="by_popularity">popularity</string>
     <string name="by_ratings">ratings</string>
     <string name="overview">Overview</string>
+    <string name="json_response_results">results</string>
+    <string name="json_response_original_title">original_title</string>
+    <string name="json_response_poster_path">poster_path</string>
+    <string name="json_response_movie_id">id</string>
+    <string name="no_connection_msg">Internet apppears to be offline</string>
+    <string name="released">Released:</string>
+    <string name="ratings">Ratings:</string>
+    <string name="share_movie_caption">Check out this awesome movie!</string>
+    <string name="share_movie_hashtags">*#Andela #Udacity #Google #MovieApp*</string>
+    <string name="share_movie_developer">Made with love by *@luksy_breezy*</string>
+    <string name="share_intent_title">Share via</string>
 </resources>

@@ -9,32 +9,29 @@ import com.soundwebcraft.movietainment.BuildConfig;
 
 public abstract class TMDB {
     // TmDB api base url
-    private static final String API_BASE_URL = "https://api.themoviedb.org/3/";
-    // TmDB API KEY
-    private static final String API_KEY = BuildConfig.API_KEY;
-    private static final String API_KEY_QUERY_PARAM = "api_key";
-
-    private static final String SORT_BY_QUERY_PARAM = "sort_by";
-    // sort movies by popularity
-    private static final String POPULARITY = "popularity.desc";
-    // sort movies by user ratings
-    private static final String RATINGS = "vote_average.desc";
-
-    private static final String DISCOVER ="discover";
-    private static final String MOVIE ="movie";
+    private static final String API_BASE_URL = "https://api.themoviedb.org/3/",
+            API_KEY = BuildConfig.API_KEY, // TmDB API KEY
+            API_KEY_QUERY_PARAM = "api_key",
+            SORT_BY_QUERY_PARAM = "sort_by",
+            POPULARITY = "popularity.desc", // sort movies by popularity
+            RATINGS = "vote_average.desc", // sort movies by user ratings
+            DISCOVER = "discover",
+            MOVIE = "movie";
+    public static final String PAGE_QUERY_PARAM = "page";
 
     // get movies url
     public static String buildMoviesURL() {
         return latestMovies().toString();
     }
 
-    private static Uri latestMovies () {
+    private static Uri latestMovies() {
         return Uri.parse(API_BASE_URL).buildUpon()
                 .appendPath(DISCOVER)
                 .appendPath(MOVIE)
                 .appendQueryParameter(API_KEY_QUERY_PARAM, API_KEY)
                 .build();
     }
+
     public static String buildMoviesURL(String sortBy) {
         Uri uri = null;
         sortBy = sortBy == null ? "" : sortBy;
@@ -63,7 +60,7 @@ public abstract class TMDB {
     }
 
     // get movie url
-    public static String buildMovieURL (int movieID) {
+    public static String buildMovieURL(int movieID) {
         return Uri.parse(API_BASE_URL)
                 .buildUpon()
                 .appendPath(MOVIE)

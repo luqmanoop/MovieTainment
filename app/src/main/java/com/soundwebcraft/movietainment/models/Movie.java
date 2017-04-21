@@ -16,11 +16,9 @@ public class Movie {
     private String imdb_id;
 
     // base url for loading tmdb images
-    public static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
-    // as recommended in rubric
-    public static final String POSTER_SIZE_SM = "w185";
-    // for detail screen. w185 is kinda too low to use here
-    private static final String POSTER_SIZE_BG = "w342";
+    public static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/",
+            POSTER_SIZE_SM = "w185",
+            POSTER_SIZE_BG = "w342";
 
     // constructors
     public Movie(String title) { // useful for testing model with dummy data

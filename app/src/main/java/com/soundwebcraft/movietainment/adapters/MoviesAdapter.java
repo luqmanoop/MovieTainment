@@ -54,7 +54,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
         ImageView imageView = holder.posterImage;
         // set the movie poster content description
-        String movieContentDescription = "Movie: " + movie.getOriginalTitle();
+        String movieContentDescription = movie.getOriginalTitle();
         imageView.setContentDescription(movieContentDescription);
         // load the movie poster into the imageview
         Picasso.with(mContext)

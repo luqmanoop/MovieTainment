@@ -94,24 +94,24 @@ public class MoviesActivity extends AppCompatActivity {
         if (TMDB.isDeviceConnected(this)) {
             AndroidNetworking.get(TMDB.buildMoviesURL(sort))
                     .setPriority(Priority.HIGH)
-                    .addQueryParameter("page", String.valueOf(page))
+                    .addQueryParameter(TMDB.PAGE_QUERY_PARAM, String.valueOf(page))
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
                         public void onResponse(JSONObject response) {
                             List<Movie> movieList = new ArrayList<Movie>();
                             try {
-                                JSONArray res = response.getJSONArray("results");
+                                JSONArray res = response.getJSONArray(getString(R.string.json_response_results));
                                 int total = res.length();
                                 Log.d(TAG, "" + total);
                                 for (int i = 0; i < total; i++) {
                                     JSONObject movieObj = (JSONObject) res.get(i);
                                     movieList.add(new Movie(
-                                            movieObj.getString("original_title"),
-                                            movieObj.getString("poster_path"),
-                                            movieObj.getInt("id")
+                                            movieObj.getString(getString(R.string.json_response_original_title)),
+                                            movieObj.getString(getString(R.string.json_response_poster_path)),
+                                            movieObj.getInt(getString(R.string.json_response_movie_id))
                                     ));
-                                    Log.d(TAG, movieObj.getString("poster_path"));
+                                    Log.d(TAG, movieObj.getString(getString(R.string.json_response_poster_path)));
                                 }
                                 allMovies.addAll(movieList);
                                 int size = adapter.getItemCount();
@@ -128,7 +128,7 @@ public class MoviesActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Toast.makeText(this, "Internet apppears to be offline", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_connection_msg, Toast.LENGTH_LONG).show();
         }
     }
 }
