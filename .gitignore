@@ -39,6 +39,8 @@ captures/
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/gradle.xml
+ .idea/markdown-navigator/**
+ .idea/markdown-navigator.xml
 .idea/dictionaries
 .idea/libraries
 
