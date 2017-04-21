@@ -24,6 +24,9 @@ import com.soundwebcraft.movietainment.utils.TMDB;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MovieDetailActivity extends AppCompatActivity {
 
     public static final String TAG = MovieDetailActivity.class.getSimpleName();
@@ -32,12 +35,14 @@ public class MovieDetailActivity extends AppCompatActivity {
     private static final String MOVIE_TITLE = "MOVIE_TITLE";
     private static final String MOVIE_ID = "MOVIE_ID";
 
-    TextView ovTitle;
-    TextView overview;
-    TextView released;
-    TextView ratings;
-    ImageView posterImg;
-    Context context;
+    @BindView(R.id.ov_title) TextView ovTitle;
+    @BindView(R.id.overview) TextView overview;
+    @BindView(R.id.releaseDate) TextView released;
+    @BindView(R.id.ratings) TextView ratings;
+    @BindView(R.id.movie_poster) ImageView posterImg;
+
+    Context mContext;
+
     String imdb_id = null;
     String moviePoster = null;
     String movieTitle = null;
@@ -46,8 +51,10 @@ public class MovieDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
+        mContext = this;
+        // init ButterKnife
+        ButterKnife.bind(this);
         // show up button
-
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -57,13 +64,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-
-        context = this;
-        ovTitle = (TextView) findViewById(R.id.ov_title);
-        overview = (TextView) findViewById(R.id.overview);
-        released = (TextView) findViewById(R.id.releaseDate);
-        ratings = (TextView) findViewById(R.id.ratings);
-        posterImg = (ImageView) findViewById(R.id.movie_poster);
 
         Intent otherIntent = getIntent();
         if (otherIntent != null && otherIntent.hasExtra(MOVIE_ID)) {
@@ -127,7 +127,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                             // if for some weird reason we didn't get movie poster url from intent
                             // use url from response
-                            if (moviePoster == null) Picasso.with(context)
+                            if (moviePoster == null) Picasso.with(mContext)
                                     .load(response.getPoster(true))
                                     .error(R.drawable.no_preview)
                                     .into(posterImg);
