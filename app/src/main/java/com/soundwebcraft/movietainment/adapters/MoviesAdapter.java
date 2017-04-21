@@ -24,10 +24,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
-    public static final String TAG = MoviesAdapter.class.getSimpleName();
-    public static final String HIGH_RES_POSTER = "HIGH_RES_POSTER";
-    private static final String MOVIE_TITLE = "MOVIE_TITLE";
-    private static final String MOVIE_ID = "MOVIE_ID";
+    public static final String TAG = MoviesAdapter.class.getSimpleName(),
+            HIGH_RES_POSTER = "HIGH_RES_POSTER",
+            MOVIE_TITLE = "MOVIE_TITLE",
+            MOVIE_ID = "MOVIE_ID";
+
     private List<Movie> mMovies;
     private Context mContext;
     private Toast mToast;

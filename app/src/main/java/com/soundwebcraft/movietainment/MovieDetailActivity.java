@@ -27,13 +27,14 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.soundwebcraft.movietainment.adapters.MoviesAdapter.HIGH_RES_POSTER;
+import static com.soundwebcraft.movietainment.adapters.MoviesAdapter.MOVIE_ID;
+import static com.soundwebcraft.movietainment.adapters.MoviesAdapter.MOVIE_TITLE;
+
 public class MovieDetailActivity extends AppCompatActivity {
 
-    public static final String TAG = MovieDetailActivity.class.getSimpleName();
-    private static final String IMDB_MOVIE_PREVIEW = "http://www.imdb.com/title/";
-    private static final String HIGH_RES_POSTER = "HIGH_RES_POSTER";
-    private static final String MOVIE_TITLE = "MOVIE_TITLE";
-    private static final String MOVIE_ID = "MOVIE_ID";
+    public static final String TAG = MovieDetailActivity.class.getSimpleName(),
+            IMDB_MOVIE_PREVIEW = "http://www.imdb.com/title/";
 
     @BindView(R.id.ov_title) TextView ovTitle;
     @BindView(R.id.overview) TextView overview;
@@ -43,9 +44,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     Context mContext;
 
-    String imdb_id = null;
-    String moviePoster = null;
-    String movieTitle = null;
+    String imdb_id = null, moviePoster = null, movieTitle = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
