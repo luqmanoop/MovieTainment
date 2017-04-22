@@ -1,7 +1,11 @@
 package com.soundwebcraft.movietainment.adapters;
 
+import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundwebcraft.movietainment.MovieDetailActivity;
+import com.soundwebcraft.movietainment.MoviesActivity;
 import com.soundwebcraft.movietainment.R;
 import com.soundwebcraft.movietainment.models.Movie;
 import com.squareup.picasso.Picasso;
@@ -64,7 +69,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         movieRatings.setText(String.valueOf(movie.getVoteAverage()));
         movieReleasedDate.setText(movie.getReleaseDate());
 
-        ImageView imageView = holder.posterImage;
+        ImageView imageView = holder.posterImageView;
         // set the movie poster content description
         String movieContentDescription = movie.getOriginalTitle();
         imageView.setContentDescription(movieContentDescription);
@@ -90,7 +95,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         @BindView(R.id.tv_item_movie)
         TextView titleTextView;
         @BindView(R.id.movie_poster)
-        ImageView posterImage;
+        ImageView posterImageView;
         @BindView(R.id.movie_id)
         TextView movieIDTextView;
         @BindView(R.id.movie_overview)
@@ -106,6 +111,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
@@ -126,9 +132,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                             mMovies.get(position).getVoteAverage(),
                             movieRD
                     );
-                    Toast.makeText(mContext, mMovies.get(position).getPosterPath(), Toast.LENGTH_SHORT).show();
                     intent.putExtra(Intent.EXTRA_TEXT, Parcels.wrap(movie));
-                    mContext.startActivity(intent);
+
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                            (MoviesActivity) mContext,
+                            posterImageView,
+                            posterImageView.getTransitionName()
+                            ).toBundle();
+                    mContext.startActivity(intent, bundle);
                 }
             });
         }
