@@ -1,19 +1,24 @@
 package com.soundwebcraft.movietainment.models;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
-
+@Parcel
 public class Movie {
 
     // fields
-    private String original_title;
-    private String poster_path;
-    private String overview;
-    private double vote_average;
-    private String release_date;
-    private float mRatings;
-    private int id;
-    private String imdb_id;
+    String original_title;
+    String poster_path;
+    String overview;
+    double vote_average;
+    String release_date;
+    float mRatings;
+    int id;
+    String imdb_id;
+
+    public Movie() {
+    }
 
     // base url for loading tmdb images
     public static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/",
@@ -31,9 +36,10 @@ public class Movie {
         this.id = id;
     }
 
-    public Movie(String original_title, String poster_path, String overview, double vote_average, String release_date) {
+    public Movie(String original_title, String poster_path, int id, String overview, double vote_average, String release_date) {
         this.original_title = original_title;
         this.poster_path = poster_path;
+        this.id = id;
         this.overview = overview;
         this.vote_average = vote_average;
         this.release_date = release_date;
