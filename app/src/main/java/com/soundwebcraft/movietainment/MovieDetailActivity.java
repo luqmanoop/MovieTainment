@@ -102,7 +102,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                         @Override
                         public void onError() {
-                            Log.e(TAG, "Error loading image");
+                            Log.e(TAG, getString(R.string.error_loading_image));
                         }
                     });
         }

@@ -20,4 +20,5 @@
     <string name="json_response_released_date">release_date</string>
     <string name="json_response_vote_average">vote_average</string>
     <string name="json_response_overview">overview</string>
+    <string name="error_loading_image">Error loading image</string>
 </resources>
