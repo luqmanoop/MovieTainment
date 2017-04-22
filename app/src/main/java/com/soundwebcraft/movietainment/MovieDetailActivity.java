@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -43,11 +44,16 @@ public class MovieDetailActivity extends AppCompatActivity {
     @BindView(R.id.ratings)
     TextView ratings;
     @BindView(R.id.movie_poster)
-    ImageView posterImg;
+    ImageView posterImgView;
 
     Context mContext;
 
-    String imdb_id = null, moviePoster = null, movieTitle = null, movieReleased = null, movieRatings = null;
+    String imdb_id = null,
+            posterLowRes = null,
+            posterHighRes = null,
+            movieTitle = null,
+            movieReleased = null,
+            movieRatings = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +78,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         if (otherIntent != null && otherIntent.hasExtra(Intent.EXTRA_TEXT)) {
             Movie movie = Parcels.unwrap(otherIntent.getParcelableExtra(Intent.EXTRA_TEXT));
             movieTitle = movie.getOriginalTitle();
-            moviePoster = movie.getPosterPath();
+            posterLowRes = movie.getPoster();
+            posterHighRes = movie.getPoster(true);
             movieReleased = getString(R.string.released) + movie.getReleaseDate();
+            movieRatings = getString(R.string.ratings) + movie.getVoteAverage();
             int movieid = movie.getID();
 
             collapsingToolbar.setTitle(movieTitle);
@@ -82,24 +90,37 @@ public class MovieDetailActivity extends AppCompatActivity {
             released.setText(movieReleased);
             ratings.setText(movieRatings);
 
-            if (moviePoster != null) Picasso.with(this)
-                    .load(moviePoster)
+            if (posterLowRes != null) Picasso.with(this)
+                    .load(posterLowRes)
                     .placeholder(R.drawable.loading)
                     .error(R.drawable.no_preview)
-                    .into(posterImg, new Callback() {
+                    .into(posterImgView, new Callback() {
                         @Override
                         public void onSuccess() {
-                            scheduleStartPostponedTransition(posterImg);
+                            scheduleStartPostponedTransition(posterImgView);
+                            if (posterHighRes != null) new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadHighResMoviePoster(posterHighRes);
+                                }
+                            }, 1000);
                         }
 
                         @Override
                         public void onError() {
-
+                            Log.e(TAG, "Error loading image");
                         }
                     });
 
-            fetchMovie(TMDB.buildMovieURL(movieid));
+            //fetchMovie(TMDB.buildMovieURL(movieid));
         }
+    }
+
+    private void loadHighResMoviePoster(String url) {
+        Picasso.with(this)
+                .load(url)
+                .noPlaceholder()
+                .into(posterImgView);
     }
 
     private void scheduleStartPostponedTransition(final View sharedElement) {
@@ -133,10 +154,10 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                             // if for some weird reason we didn't get movie poster url from intent
                             // use url from response
-                            if (moviePoster == null) Picasso.with(mContext)
+                            if (posterLowRes == null) Picasso.with(mContext)
                                     .load(response.getPoster(true))
                                     .error(R.drawable.no_preview)
-                                    .into(posterImg);
+                                    .into(posterImgView);
 
                             imdb_id = response.getImdb_id();
                         }

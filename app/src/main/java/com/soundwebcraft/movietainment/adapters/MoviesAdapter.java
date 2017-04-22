@@ -33,6 +33,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     private List<Movie> mMovies;
     private Context mContext;
     private Toast mToast;
+
     public MoviesAdapter(Context context, List<Movie> movies) {
         mContext = context;
         mMovies = movies;
@@ -86,12 +87,18 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
         // hold reference to each views in row for caching
-        @BindView(R.id.tv_item_movie) TextView titleTextView;
-        @BindView(R.id.movie_poster) ImageView posterImage;
-        @BindView(R.id.movie_id) TextView movieIDTextView;
-        @BindView(R.id.movie_overview) TextView overview;
-        @BindView(R.id.movie_vote_average) TextView voteAverage;
-        @BindView(R.id.movie_released_date) TextView releasedDate;
+        @BindView(R.id.tv_item_movie)
+        TextView titleTextView;
+        @BindView(R.id.movie_poster)
+        ImageView posterImage;
+        @BindView(R.id.movie_id)
+        TextView movieIDTextView;
+        @BindView(R.id.movie_overview)
+        TextView overview;
+        @BindView(R.id.movie_vote_average)
+        TextView voteAverage;
+        @BindView(R.id.movie_released_date)
+        TextView releasedDate;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
@@ -102,21 +109,24 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    int movieId = mMovies.get(position).getID();
-                    String highResPoster = mMovies.get(position).getPoster(true);
-                    String movieTitle = mMovies.get(position).getOriginalTitle();
+                    Movie clickedMovie = mMovies.get(position);
+                    int movieId = clickedMovie.getID();
+                    String highResPoster = clickedMovie.getPoster(),
+                            movieTitle = clickedMovie.getOriginalTitle(),
+                            movieOv = clickedMovie.getOverview(),
+                            movieRD = clickedMovie.getReleaseDate();
 
                     Intent intent = new Intent(mContext, MovieDetailActivity.class);
 
                     Movie movie = new Movie(
-                            mMovies.get(position).getOriginalTitle(),
-                            mMovies.get(position).getPoster(),
-                            mMovies.get(position).getID(),
-                            mMovies.get(position).getOverview(),
+                            movieTitle,
+                            mMovies.get(position).getPosterPath(),
+                            movieId,
+                            movieOv,
                             mMovies.get(position).getVoteAverage(),
-                            mMovies.get(position).getReleaseDate()
+                            movieRD
                     );
-
+                    Toast.makeText(mContext, mMovies.get(position).getPosterPath(), Toast.LENGTH_SHORT).show();
                     intent.putExtra(Intent.EXTRA_TEXT, Parcels.wrap(movie));
                     mContext.startActivity(intent);
                 }
