@@ -2,7 +2,6 @@ package com.soundwebcraft.movietainment.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,8 @@ import com.soundwebcraft.movietainment.MovieDetailActivity;
 import com.soundwebcraft.movietainment.R;
 import com.soundwebcraft.movietainment.models.Movie;
 import com.squareup.picasso.Picasso;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -49,8 +50,18 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         Movie movie = mMovies.get(position);
-        TextView textView = holder.titleTextView;
-        textView.setText(movie.getOriginalTitle());
+
+        TextView movieTitle = holder.titleTextView,
+                movieIDTextView = holder.movieIDTextView,
+                movieOverview = holder.overview,
+                movieRatings = holder.voteAverage,
+                movieReleasedDate = holder.releasedDate;
+        movieTitle.setText(movie.getOriginalTitle());
+
+        movieIDTextView.setText(String.valueOf(movie.getID()));
+        movieOverview.setText(movie.getOverview());
+        movieRatings.setText(String.valueOf(movie.getVoteAverage()));
+        movieReleasedDate.setText(movie.getReleaseDate());
 
         ImageView imageView = holder.posterImage;
         // set the movie poster content description
@@ -62,9 +73,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.no_preview)
                 .into(imageView);
-
-        TextView movieIDTextView = holder.movieIDTextView;
-        movieIDTextView.setText(String.valueOf(movie.getID()));
 
         // add animations to item {row}
         Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.slide_in_left);
@@ -81,6 +89,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         @BindView(R.id.tv_item_movie) TextView titleTextView;
         @BindView(R.id.movie_poster) ImageView posterImage;
         @BindView(R.id.movie_id) TextView movieIDTextView;
+        @BindView(R.id.movie_overview) TextView overview;
+        @BindView(R.id.movie_vote_average) TextView voteAverage;
+        @BindView(R.id.movie_released_date) TextView releasedDate;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
@@ -97,13 +108,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
                     Intent intent = new Intent(mContext, MovieDetailActivity.class);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(MOVIE_ID, movieId);
-                    // send poster (high res) url to detail activity for fast loading (doesn't wait for getting movie clicked)
-                    bundle.putString(HIGH_RES_POSTER, highResPoster);
-                    bundle.putString(MOVIE_TITLE, movieTitle);
-                    intent.putExtras(bundle);
+                    Movie movie = new Movie(
+                            mMovies.get(position).getOriginalTitle(),
+                            mMovies.get(position).getPoster(),
+                            mMovies.get(position).getID(),
+                            mMovies.get(position).getOverview(),
+                            mMovies.get(position).getVoteAverage(),
+                            mMovies.get(position).getReleaseDate()
+                    );
 
+                    intent.putExtra(Intent.EXTRA_TEXT, Parcels.wrap(movie));
                     mContext.startActivity(intent);
                 }
             });

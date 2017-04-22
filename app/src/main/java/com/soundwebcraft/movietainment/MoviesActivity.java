@@ -103,15 +103,17 @@ public class MoviesActivity extends AppCompatActivity {
                             try {
                                 JSONArray res = response.getJSONArray(getString(R.string.json_response_results));
                                 int total = res.length();
-                                Log.d(TAG, "" + total);
                                 for (int i = 0; i < total; i++) {
                                     JSONObject movieObj = (JSONObject) res.get(i);
                                     movieList.add(new Movie(
                                             movieObj.getString(getString(R.string.json_response_original_title)),
                                             movieObj.getString(getString(R.string.json_response_poster_path)),
-                                            movieObj.getInt(getString(R.string.json_response_movie_id))
+                                            movieObj.getInt(getString(R.string.json_response_movie_id)),
+                                            movieObj.getString(getString(R.string.json_response_overview)),
+                                            movieObj.getDouble(getString(R.string.json_response_vote_average)),
+                                            movieObj.getString(getString(R.string.json_response_released_date))
                                     ));
-                                    Log.d(TAG, movieObj.getString(getString(R.string.json_response_poster_path)));
+                                    //Log.d(TAG, "HERE " + movieList.get(i).toString());
                                 }
                                 allMovies.addAll(movieList);
                                 int size = adapter.getItemCount();

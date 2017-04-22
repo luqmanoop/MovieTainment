@@ -24,27 +24,30 @@ import com.soundwebcraft.movietainment.utils.TMDB;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.parceler.Parcels;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.soundwebcraft.movietainment.adapters.MoviesAdapter.HIGH_RES_POSTER;
-import static com.soundwebcraft.movietainment.adapters.MoviesAdapter.MOVIE_ID;
-import static com.soundwebcraft.movietainment.adapters.MoviesAdapter.MOVIE_TITLE;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
     public static final String TAG = MovieDetailActivity.class.getSimpleName(),
             IMDB_MOVIE_PREVIEW = "http://www.imdb.com/title/";
 
-    @BindView(R.id.ov_title) TextView ovTitle;
-    @BindView(R.id.overview) TextView overview;
-    @BindView(R.id.releaseDate) TextView released;
-    @BindView(R.id.ratings) TextView ratings;
-    @BindView(R.id.movie_poster) ImageView posterImg;
+    @BindView(R.id.ov_title)
+    TextView ovTitle;
+    @BindView(R.id.overview)
+    TextView overview;
+    @BindView(R.id.releaseDate)
+    TextView released;
+    @BindView(R.id.ratings)
+    TextView ratings;
+    @BindView(R.id.movie_poster)
+    ImageView posterImg;
 
     Context mContext;
 
-    String imdb_id = null, moviePoster = null, movieTitle = null;
+    String imdb_id = null, moviePoster = null, movieTitle = null, movieReleased = null, movieRatings = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +68,19 @@ public class MovieDetailActivity extends AppCompatActivity {
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
         Intent otherIntent = getIntent();
-        if (otherIntent != null && otherIntent.hasExtra(MOVIE_ID)) {
-            int movieid = otherIntent.getIntExtra(MOVIE_ID, 0);
-            if (otherIntent.hasExtra(HIGH_RES_POSTER))
-                moviePoster = otherIntent.getStringExtra(HIGH_RES_POSTER);
-            if (otherIntent.hasExtra(MOVIE_TITLE)) {
-                movieTitle = otherIntent.getStringExtra(MOVIE_TITLE);
-                collapsingToolbar.setTitle(movieTitle);
-            }
 
+        if (otherIntent != null && otherIntent.hasExtra(Intent.EXTRA_TEXT)) {
+            Movie movie = Parcels.unwrap(otherIntent.getParcelableExtra(Intent.EXTRA_TEXT));
+            movieTitle = movie.getOriginalTitle();
+            moviePoster = movie.getPosterPath();
+            movieReleased = getString(R.string.released) + movie.getReleaseDate();
+            int movieid = movie.getID();
+
+            collapsingToolbar.setTitle(movieTitle);
+
+            overview.setText(movie.getOverview());
+            released.setText(movieReleased);
+            ratings.setText(movieRatings);
 
             if (moviePoster != null) Picasso.with(this)
                     .load(moviePoster)
