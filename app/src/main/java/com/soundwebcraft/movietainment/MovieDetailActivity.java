@@ -14,14 +14,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.androidnetworking.AndroidNetworking;
-import com.androidnetworking.common.Priority;
-import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.ParsedRequestListener;
 import com.soundwebcraft.movietainment.models.Movie;
-import com.soundwebcraft.movietainment.utils.TMDB;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -111,8 +105,6 @@ public class MovieDetailActivity extends AppCompatActivity {
                             Log.e(TAG, "Error loading image");
                         }
                     });
-
-            //fetchMovie(TMDB.buildMovieURL(movieid));
         }
     }
 
@@ -135,41 +127,6 @@ public class MovieDetailActivity extends AppCompatActivity {
                         return true;
                     }
                 });
-    }
-
-    void fetchMovie(String url) {
-        if (TMDB.isDeviceConnected(this)) {
-            AndroidNetworking.get(url)
-                    .setPriority(Priority.MEDIUM)
-                    .build()
-                    .getAsObject(Movie.class, new ParsedRequestListener<Movie>() {
-                        @Override
-                        public void onResponse(Movie response) {
-                            ovTitle.setText(getString(R.string.overview));
-                            overview.setText(response.getOverview());
-                            String rd = getString(R.string.released) + response.getReleaseDate();
-                            released.setText(rd);
-                            String rt = getString(R.string.ratings) + response.getVoteAverage() + "/10";
-                            ratings.setText(rt);
-
-                            // if for some weird reason we didn't get movie poster url from intent
-                            // use url from response
-                            if (posterLowRes == null) Picasso.with(mContext)
-                                    .load(response.getPoster(true))
-                                    .error(R.drawable.no_preview)
-                                    .into(posterImgView);
-
-                            imdb_id = response.getImdb_id();
-                        }
-
-                        @Override
-                        public void onError(ANError anError) {
-                            Log.d(TAG, anError.getMessage());
-                        }
-                    });
-        } else {
-            Toast.makeText(this, getString(R.string.no_connection_msg), Toast.LENGTH_LONG).show();
-        }
     }
 
     public void shareMovie(View view) {
