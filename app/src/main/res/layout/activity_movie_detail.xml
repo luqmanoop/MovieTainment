@@ -31,7 +31,7 @@
                 android:contentDescription="@string/mv_description"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
-                android:transitionName="poster"
+                android:transitionName="@string/share_element_poster"
                 app:layout_collapseMode="parallax"
                 tools:targetApi="lollipop"/>
 
