@@ -2,8 +2,13 @@ package com.soundwebcraft.movietainment.models;
 
 import org.parceler.Parcel;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+
 @Parcel
 public class Movie {
 
@@ -12,6 +17,7 @@ public class Movie {
     String poster_path;
     String overview;
     double vote_average;
+    double vote_count;
     String release_date;
     float mRatings;
     int id;
@@ -42,6 +48,16 @@ public class Movie {
         this.id = id;
         this.overview = overview;
         this.vote_average = vote_average;
+        this.release_date = release_date;
+    }
+
+    public Movie(String original_title, String poster_path, int id, String overview, double vote_average, double vote_count, String release_date) {
+        this.original_title = original_title;
+        this.poster_path = poster_path;
+        this.id = id;
+        this.overview = overview;
+        this.vote_average = vote_average;
+        this.vote_count = vote_count;
         this.release_date = release_date;
     }
 
@@ -107,6 +123,29 @@ public class Movie {
             url = MOVIE_POSTER_BASE_URL + POSTER_SIZE_SM + getPosterPath();
         }
         return url;
+    }
+
+    public String caculateRatings(Double voteAverage) {
+        java.text.DecimalFormat df = new java.text.DecimalFormat(".##");
+        return String.valueOf(df.format((voteAverage / 10) * 5));
+    }
+
+    public double getVoteCount() {
+        return vote_count;
+    }
+
+    public String getFormattedVoteCount() {
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+        return numberFormat.format(vote_count);
+    }
+
+    public String getFormattedReleaseDate () {
+        String[] kaboom = getReleaseDate().split("-");
+        int year = Integer.parseInt(kaboom[0]),
+                month = Integer.parseInt(kaboom[1]),
+                day = Integer.parseInt(kaboom[2]);
+        Calendar calendar = new GregorianCalendar(year,month - 1, day);
+        return String.format(Locale.US,"%1$tB %1$te, %1$tY", calendar);
     }
 
     // toString override
