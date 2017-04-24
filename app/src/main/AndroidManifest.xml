@@ -23,7 +23,7 @@
         </activity>
         <activity android:name=".MovieDetailActivity"
             android:parentActivityName=".MoviesActivity"
-                  android:theme="@style/Theme.AppCompat.NoActionBar"
+                  android:theme="@style/MovieDetailTheme"
             >
         </activity>
     </application>
