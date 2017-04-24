@@ -12,7 +12,7 @@
     <string name="json_response_movie_id">id</string>
     <string name="no_connection_msg">Internet apppears to be offline</string>
     <string name="released">"Released: "</string>
-    <string name="ratings">"Ratings: "</string>
+    <string name="ratings">"Ratings"</string>
     <string name="share_movie_caption">Check out this awesome movie!</string>
     <string name="share_movie_hashtags">*#Andela #Udacity #Google #MovieApp*</string>
     <string name="share_movie_developer">Made with love by *@luksy_breezy*</string>
@@ -22,4 +22,11 @@
     <string name="json_response_overview">overview</string>
     <string name="error_loading_image">Error loading image</string>
     <string name="share_element_poster">poster</string>
+    <string name="genre">Genre</string>
+    <string name="release_date">Release Date</string>
+    <string name="loading_text_placeholder">Loading...</string>
+    <string name="json_response_imdb_id">imdb_id</string>
+    <string name="json_response_genres">genres</string>
+    <string name="json_response_genre_name">name</string>
+    <string name="mime_type_text_document">text/plain</string><string name="date_format">%1$tB %1$te, %1$tY</string>
 </resources>

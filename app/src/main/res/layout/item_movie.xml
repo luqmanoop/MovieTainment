@@ -13,7 +13,7 @@
         android:layout_gravity="center"
         android:layout_margin="@dimen/card_margin"
         app:cardCornerRadius="@dimen/card_album_radius"
-        app:cardElevation="3dp">
+        app:cardElevation="4dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,10 +22,9 @@
             <ImageView
                 android:id="@+id/movie_poster"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="160dp"
                 android:transitionName="@string/share_element_poster"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:minHeight="140dp"
                 android:scaleType="centerCrop"
                 tools:src="@drawable/no_preview"
                 tools:targetApi="lollipop"
@@ -38,7 +37,8 @@
                 android:layout_below="@id/movie_poster"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:padding="@dimen/album_title_padding"
+                android:textSize="16sp"
+                android:padding="16dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 tools:text="Mad Max: Fury"/>
             <TextView
@@ -56,6 +56,12 @@
 
             <TextView
                 android:id="@+id/movie_vote_average"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/overview"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/movie_vote_count"
                 android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_below="@id/overview"
