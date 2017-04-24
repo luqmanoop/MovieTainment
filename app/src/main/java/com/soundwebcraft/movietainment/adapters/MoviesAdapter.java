@@ -102,6 +102,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         TextView overview;
         @BindView(R.id.movie_vote_average)
         TextView voteAverage;
+        @BindView(R.id.movie_vote_count)
+        TextView voteCount;
         @BindView(R.id.movie_released_date)
         TextView releasedDate;
 
@@ -130,6 +132,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                             movieId,
                             movieOv,
                             mMovies.get(position).getVoteAverage(),
+                            mMovies.get(position).getVoteCount(),
                             movieRD
                     );
                     intent.putExtra(Intent.EXTRA_TEXT, Parcels.wrap(movie));
