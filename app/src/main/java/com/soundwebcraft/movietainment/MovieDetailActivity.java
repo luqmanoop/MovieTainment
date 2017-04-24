@@ -9,16 +9,26 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.soundwebcraft.movietainment.models.Movie;
+import com.soundwebcraft.movietainment.utils.TMDB;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import butterknife.BindView;
@@ -30,15 +40,21 @@ public class MovieDetailActivity extends AppCompatActivity {
             IMDB_MOVIE_PREVIEW = "http://www.imdb.com/title/";
 
     @BindView(R.id.ov_title)
-    TextView ovTitle;
+    TextView mTextViewOverviewTitle;
     @BindView(R.id.overview)
-    TextView overview;
+    TextView mTextViewOverview;
+    @BindView(R.id.tv_genres)
+    TextView mGenres;
     @BindView(R.id.releaseDate)
-    TextView released;
+    TextView mTextViewReleasedDate;
     @BindView(R.id.ratings)
-    TextView ratings;
+    TextView mTextViewRatings;
+    @BindView(R.id.tv_vote_count)
+    TextView mTextViewVoteCount;
     @BindView(R.id.movie_poster)
-    ImageView posterImgView;
+    ImageView mIVPoster;
+    @BindView(R.id.movie_rating_bar)
+    RatingBar mRatingBar;
 
     Context mContext;
 
@@ -74,24 +90,31 @@ public class MovieDetailActivity extends AppCompatActivity {
             movieTitle = movie.getOriginalTitle();
             posterLowRes = movie.getPoster();
             posterHighRes = movie.getPoster(true);
-            movieReleased = getString(R.string.released) + movie.getReleaseDate();
-            movieRatings = getString(R.string.ratings) + movie.getVoteAverage();
-            int movieid = movie.getID();
+            movieReleased = movie.getFormattedReleaseDate();
+            movieRatings = movie.caculateRatings(movie.getVoteAverage());
+            int movieid = 0;
+            movieid = movie.getID();
+
+            if (movieid > 0) loadMoreMovieInfo(movieid);
 
             collapsingToolbar.setTitle(movieTitle);
 
-            overview.setText(movie.getOverview());
-            released.setText(movieReleased);
-            ratings.setText(movieRatings);
+            mTextViewOverviewTitle.setText(getString(R.string.overview));
+            mTextViewOverview.setText(movie.getOverview());
+            mTextViewReleasedDate.setText(movieReleased);
+            mGenres.setText(R.string.loading_text_placeholder);
+            mTextViewRatings.setText(movieRatings);
+            mRatingBar.setRating(Float.parseFloat(movieRatings));
+            mTextViewVoteCount.setText(movie.getFormattedVoteCount() + " " + getString(R.string.ratings).toLowerCase());
 
             if (posterLowRes != null) Picasso.with(this)
                     .load(posterLowRes)
                     .placeholder(R.drawable.loading)
                     .error(R.drawable.no_preview)
-                    .into(posterImgView, new Callback() {
+                    .into(mIVPoster, new Callback() {
                         @Override
                         public void onSuccess() {
-                            scheduleStartPostponedTransition(posterImgView);
+                            scheduleStartPostponedTransition(mIVPoster);
                             if (posterHighRes != null) new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -112,7 +135,37 @@ public class MovieDetailActivity extends AppCompatActivity {
         Picasso.with(this)
                 .load(url)
                 .noPlaceholder()
-                .into(posterImgView);
+                .into(mIVPoster);
+    }
+
+    private void loadMoreMovieInfo(int movieID) {
+        AndroidNetworking.get(TMDB.buildMovieURL(movieID))
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String genres = "";
+                        try {
+                            imdb_id = response.getString(getString(R.string.json_response_imdb_id));
+                            JSONArray genresArray = response.getJSONArray(getString(R.string.json_response_genres));
+                            int genreLength = genresArray.length();
+                            for (int i = 0; i < genreLength; i++) {
+                                JSONObject genreObj = (JSONObject) genresArray.get(i);
+                                genres += genreObj.getString(getString(R.string.json_response_genre_name));
+                                if (genreLength - i != 1) genres += ", ";
+                            }
+                            if (!TextUtils.isEmpty(genres)) mGenres.setText(genres);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
     }
 
     private void scheduleStartPostponedTransition(final View sharedElement) {
@@ -131,20 +184,20 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     public void shareMovie(View view) {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-        sharingIntent.setType("text/plain");
+        sharingIntent.setType(getString(R.string.mime_type_text_document));
 
         String caption = getString(R.string.share_movie_caption);
         String title = "*" + movieTitle + "*";
-        // if we cant get the movie imdb id for url preview then use movie overview
+        // if we cant get the movie imdb id for url preview then use movie mTextViewOverview
         String previewOrOverview = "";
         String movieReleasedDate = "";
         String movieRatings = "";
         if (imdb_id != null) {
             previewOrOverview = IMDB_MOVIE_PREVIEW + imdb_id;
         } else {
-            previewOrOverview = overview.getText().toString();
-            movieReleasedDate = getString(R.string.released) + released.getText().toString() + "\n";
-            movieRatings = getString(R.string.ratings) + ratings.getText().toString() + "\n";
+            previewOrOverview = mTextViewOverview.getText().toString();
+            movieReleasedDate = getString(R.string.released) + mTextViewReleasedDate.getText().toString() + "\n";
+            movieRatings = getString(R.string.ratings) + mTextViewRatings.getText().toString() + "\n";
         }
 
         String hashTags = getString(R.string.share_movie_hashtags);

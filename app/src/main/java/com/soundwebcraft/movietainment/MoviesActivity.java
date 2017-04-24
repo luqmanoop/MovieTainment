@@ -111,6 +111,7 @@ public class MoviesActivity extends AppCompatActivity {
                                             movieObj.getInt(getString(R.string.json_response_movie_id)),
                                             movieObj.getString(getString(R.string.json_response_overview)),
                                             movieObj.getDouble(getString(R.string.json_response_vote_average)),
+                                            movieObj.getDouble("vote_count"),
                                             movieObj.getString(getString(R.string.json_response_released_date))
                                     ));
                                     //Log.d(TAG, "HERE " + movieList.get(i).toString());
