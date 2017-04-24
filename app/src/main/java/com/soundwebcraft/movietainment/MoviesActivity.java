@@ -39,6 +39,8 @@ public class MoviesActivity extends AppCompatActivity {
     EndlessRecyclerViewScrollListener scrollListener;
     @BindView(R.id.loadingPanel)
     RelativeLayout loadingPanel;
+    boolean loading = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +60,7 @@ public class MoviesActivity extends AppCompatActivity {
         scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loading = false;
                 fetchMovies(page + 1, null);
             }
         };
@@ -96,11 +99,17 @@ public class MoviesActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         scrollListener.resetState();
     }
+
     void toggleLoadingPanelVisibility() {
-        if (loadingPanel.getVisibility() == View.VISIBLE)
+        if (loadingPanel.getVisibility() == View.VISIBLE) {
+            loading = false;
             loadingPanel.setVisibility(View.INVISIBLE);
-        else loadingPanel.setVisibility(View.VISIBLE);
+        } else {
+            loading = true;
+            loadingPanel.setVisibility(View.VISIBLE);
+        }
     }
+
     void fetchMovies(int page, String sort) {
         if (TMDB.isDeviceConnected(this)) {
             AndroidNetworking.get(TMDB.buildMoviesURL(sort))
@@ -110,7 +119,9 @@ public class MoviesActivity extends AppCompatActivity {
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            toggleLoadingPanelVisibility();
+                            if (loading) {
+                                toggleLoadingPanelVisibility();
+                            }
                             List<Movie> movieList = new ArrayList<Movie>();
                             try {
                                 JSONArray res = response.getJSONArray(getString(R.string.json_response_results));
