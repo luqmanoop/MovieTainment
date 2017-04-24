@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -26,18 +28,22 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MoviesActivity extends AppCompatActivity {
     public static final String TAG = MoviesActivity.class.getSimpleName();
     final List<Movie> allMovies = new ArrayList<>();
     private MoviesAdapter adapter;
     // hold reference to scrollListener
     EndlessRecyclerViewScrollListener scrollListener;
-
+    @BindView(R.id.loadingPanel)
+    RelativeLayout loadingPanel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
-
+        ButterKnife.bind(this);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_movies);
 
         adapter = new MoviesAdapter(MoviesActivity.this, allMovies);
@@ -73,10 +79,12 @@ public class MoviesActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.by_popularity:
                 resetEndlessScroll();
+                toggleLoadingPanelVisibility();
                 fetchMovies(1, getString(R.string.by_popularity));
                 return true;
             case R.id.by_ratings:
                 resetEndlessScroll();
+                toggleLoadingPanelVisibility();
                 fetchMovies(1, getString(R.string.by_ratings));
                 return true;
         }
@@ -88,8 +96,11 @@ public class MoviesActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         scrollListener.resetState();
     }
-
-
+    void toggleLoadingPanelVisibility() {
+        if (loadingPanel.getVisibility() == View.VISIBLE)
+            loadingPanel.setVisibility(View.INVISIBLE);
+        else loadingPanel.setVisibility(View.VISIBLE);
+    }
     void fetchMovies(int page, String sort) {
         if (TMDB.isDeviceConnected(this)) {
             AndroidNetworking.get(TMDB.buildMoviesURL(sort))
@@ -99,6 +110,7 @@ public class MoviesActivity extends AppCompatActivity {
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            toggleLoadingPanelVisibility();
                             List<Movie> movieList = new ArrayList<Movie>();
                             try {
                                 JSONArray res = response.getJSONArray(getString(R.string.json_response_results));
