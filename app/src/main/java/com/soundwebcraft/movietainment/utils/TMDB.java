@@ -12,9 +12,8 @@ public abstract class TMDB {
     private static final String API_BASE_URL = "https://api.themoviedb.org/3/",
             API_KEY = BuildConfig.API_KEY, // TmDB API KEY
             API_KEY_QUERY_PARAM = "api_key",
-            SORT_BY_QUERY_PARAM = "sort_by",
-            POPULARITY = "popularity.desc", // sort movies by popularity
-            RATINGS = "vote_average.desc", // sort movies by user ratings
+            POPULARITY = "popular", // sort movies by popularity
+            RATINGS = "top_rated", // sort movies by user ratings
             DISCOVER = "discover",
             MOVIE = "movie";
     public static final String PAGE_QUERY_PARAM = "page";
@@ -26,8 +25,8 @@ public abstract class TMDB {
 
     private static Uri latestMovies() {
         return Uri.parse(API_BASE_URL).buildUpon()
-                .appendPath(DISCOVER)
                 .appendPath(MOVIE)
+                .appendPath("now_playing")
                 .appendQueryParameter(API_KEY_QUERY_PARAM, API_KEY)
                 .build();
     }
@@ -38,17 +37,15 @@ public abstract class TMDB {
         switch (sortBy) {
             case "popularity":
                 uri = Uri.parse(API_BASE_URL).buildUpon()
-                        .appendPath(DISCOVER)
                         .appendPath(MOVIE)
-                        .appendQueryParameter(SORT_BY_QUERY_PARAM, POPULARITY)
+                        .appendPath(POPULARITY)
                         .appendQueryParameter(API_KEY_QUERY_PARAM, API_KEY)
                         .build();
                 break;
             case "ratings":
                 uri = Uri.parse(API_BASE_URL).buildUpon()
-                        .appendPath(DISCOVER)
                         .appendPath(MOVIE)
-                        .appendQueryParameter(SORT_BY_QUERY_PARAM, RATINGS)
+                        .appendPath(RATINGS)
                         .appendQueryParameter(API_KEY_QUERY_PARAM, API_KEY)
                         .build();
                 break;
