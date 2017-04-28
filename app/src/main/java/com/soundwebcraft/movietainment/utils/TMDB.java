@@ -15,7 +15,8 @@ public abstract class TMDB {
             POPULARITY = "popular", // sort movies by popularity
             RATINGS = "top_rated", // sort movies by user ratings
             DISCOVER = "discover",
-            MOVIE = "movie";
+            MOVIE = "movie",
+            TRAILERS = "videos";
     public static final String PAGE_QUERY_PARAM = "page";
 
     // get movies url
@@ -74,5 +75,16 @@ public abstract class TMDB {
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    public static String getMovieTrailers (int movieID) {
+        return Uri.parse(API_BASE_URL)
+                .buildUpon()
+                .appendPath(MOVIE)
+                .appendPath(String.valueOf(movieID))
+                .appendPath(TRAILERS)
+                .appendQueryParameter(API_KEY_QUERY_PARAM, API_KEY)
+                .build()
+                .toString();
     }
 }
