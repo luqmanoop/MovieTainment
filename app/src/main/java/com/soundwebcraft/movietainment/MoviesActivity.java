@@ -154,7 +154,7 @@ public class MoviesActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Toast.makeText(this, R.string.no_connection_msg, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.misc_no_connection, Toast.LENGTH_LONG).show();
         }
     }
 }
