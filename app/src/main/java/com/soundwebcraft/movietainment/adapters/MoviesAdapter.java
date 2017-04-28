@@ -138,9 +138,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                     intent.putExtra(Intent.EXTRA_TEXT, Parcels.wrap(movie));
 
                     Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                            (MoviesActivity) mContext,
-                            posterImageView,
-                            posterImageView.getTransitionName()
+                            (MoviesActivity) mContext
                             ).toBundle();
                     mContext.startActivity(intent, bundle);
                 }

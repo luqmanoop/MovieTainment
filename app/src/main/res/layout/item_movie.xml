@@ -23,7 +23,6 @@
                 android:id="@+id/movie_poster"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                android:transitionName="@string/share_element_poster"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerCrop"
                 tools:src="@drawable/no_preview"

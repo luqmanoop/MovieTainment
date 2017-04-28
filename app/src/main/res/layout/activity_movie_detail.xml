@@ -31,7 +31,6 @@
                 android:contentDescription="@string/mv_description"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
-                android:transitionName="@string/share_element_poster"
                 app:layout_collapseMode="parallax"
                 tools:targetApi="lollipop"/>
 
@@ -137,7 +136,7 @@
                 android:id="@+id/tv_genre_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/genre"
+                android:text="@string/movie_genre"
                 android:textSize="16sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBaseline_toBaselineOf="@+id/tv_genres"/>
@@ -161,7 +160,7 @@
                 android:id="@+id/tv_release_date_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/release_date"
+                android:text="@string/movie_release_date"
                 android:textSize="16sp"
                 app:layout_constraintBaseline_toBaselineOf="@+id/releaseDate"
                 app:layout_constraintLeft_toLeftOf="@+id/tv_genre_title"
