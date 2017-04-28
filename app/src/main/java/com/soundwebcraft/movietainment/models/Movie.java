@@ -1,5 +1,8 @@
 package com.soundwebcraft.movietainment.models;
 
+import android.net.Uri;
+import android.text.TextUtils;
+
 import org.parceler.Parcel;
 
 import java.text.NumberFormat;
@@ -29,7 +32,7 @@ public class Movie {
     // base url for loading tmdb images
     public static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/",
             POSTER_SIZE_SM = "w185",
-            POSTER_SIZE_BG = "w342";
+            POSTER_SIZE_BG = "w500";
 
     // constructors
     public Movie(String title) { // useful for testing model with dummy data
@@ -127,7 +130,8 @@ public class Movie {
 
     public String caculateRatings(Double voteAverage) {
         java.text.DecimalFormat df = new java.text.DecimalFormat(".##");
-        return String.valueOf(df.format((voteAverage / 10) * 5));
+        double result = Double.parseDouble(df.format((voteAverage / 10) * 5)) + 0;
+        return String.valueOf(result);
     }
 
     public double getVoteCount() {
@@ -140,6 +144,7 @@ public class Movie {
     }
 
     public String getFormattedReleaseDate () {
+        if (TextUtils.isEmpty(getReleaseDate())) return "N/A";
         String[] kaboom = getReleaseDate().split("-");
         int year = Integer.parseInt(kaboom[0]),
                 month = Integer.parseInt(kaboom[1]),
@@ -147,7 +152,14 @@ public class Movie {
         Calendar calendar = new GregorianCalendar(year,month - 1, day);
         return String.format(Locale.US,"%1$tB %1$te, %1$tY", calendar);
     }
-
+    public static String getBackdrop(String path) {
+        return Uri.parse(MOVIE_POSTER_BASE_URL)
+                .buildUpon()
+                .appendPath(POSTER_SIZE_BG)
+                .appendEncodedPath(path)
+                .build()
+                .toString();
+    }
     // toString override
     @Override
     public String toString() {
