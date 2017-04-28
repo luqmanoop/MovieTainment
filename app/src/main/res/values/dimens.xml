@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="detail_backdrop_height">280dp</dimen>
+    <dimen name="detail_backdrop_height">260dp</dimen>
     <dimen name="backdrop_title">30dp</dimen>
     <dimen name="backdrop_subtitle">18dp</dimen>
     <dimen name="card_margin">5dp</dimen>
