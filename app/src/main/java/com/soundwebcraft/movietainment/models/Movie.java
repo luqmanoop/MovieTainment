@@ -25,14 +25,17 @@ public class Movie {
     float mRatings;
     int id;
     String imdb_id;
+    String youtubeKey;
 
     public Movie() {
     }
 
     // base url for loading tmdb images
     public static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/",
+            YOUTUBE_VID_POSTER_BASE_URL = "https://img.youtube.com/vi/",
+            YOUTUBE_DEFAULT_VID_THUMBNAIL = "default.jpg",
             POSTER_SIZE_SM = "w185",
-            POSTER_SIZE_BG = "w500";
+            POSTER_SIZE_BG = "w342";
 
     // constructors
     public Movie(String title) { // useful for testing model with dummy data
@@ -73,6 +76,11 @@ public class Movie {
         mRatings = ratings;
         this.id = id;
         this.imdb_id = imdb_id;
+    }
+
+    public Movie(int id, String youtubeKey) {
+        this.id = id;
+        this.youtubeKey = youtubeKey;
     }
 
     // getters
@@ -143,15 +151,16 @@ public class Movie {
         return numberFormat.format(vote_count);
     }
 
-    public String getFormattedReleaseDate () {
+    public String getFormattedReleaseDate() {
         if (TextUtils.isEmpty(getReleaseDate())) return "N/A";
         String[] kaboom = getReleaseDate().split("-");
         int year = Integer.parseInt(kaboom[0]),
                 month = Integer.parseInt(kaboom[1]),
                 day = Integer.parseInt(kaboom[2]);
-        Calendar calendar = new GregorianCalendar(year,month - 1, day);
-        return String.format(Locale.US,"%1$tB %1$te, %1$tY", calendar);
+        Calendar calendar = new GregorianCalendar(year, month - 1, day);
+        return String.format(Locale.US, "%1$tB %1$te, %1$tY", calendar);
     }
+
     public static String getBackdrop(String path) {
         return Uri.parse(MOVIE_POSTER_BASE_URL)
                 .buildUpon()
@@ -160,6 +169,20 @@ public class Movie {
                 .build()
                 .toString();
     }
+
+    public String getYoutubeKey() {
+        return youtubeKey;
+    }
+
+    public String getTrailerThumbnail() {
+        return Uri.parse(YOUTUBE_VID_POSTER_BASE_URL)
+                .buildUpon()
+                .appendPath(getYoutubeKey())
+                .appendPath(YOUTUBE_DEFAULT_VID_THUMBNAIL)
+                .build()
+                .toString();
+    }
+
     // toString override
     @Override
     public String toString() {
