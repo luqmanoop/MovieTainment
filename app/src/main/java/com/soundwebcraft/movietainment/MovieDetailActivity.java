@@ -96,7 +96,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mPicasso = with(mContext);
-        mPicasso.setIndicatorsEnabled(true);
+        mPicasso.setIndicatorsEnabled(false);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
