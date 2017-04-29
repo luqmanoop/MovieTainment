@@ -8,12 +8,13 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.soundwebcraft.movietainment.adapters.MovieTrailersAdapter;
 import com.soundwebcraft.movietainment.models.Movie;
 import com.soundwebcraft.movietainment.utils.TMDB;
 import com.squareup.picasso.Callback;
@@ -32,9 +34,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
+
+import static com.squareup.picasso.Picasso.with;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
@@ -61,6 +68,15 @@ public class MovieDetailActivity extends AppCompatActivity {
     ImageView moviePoster;
     @BindView(R.id.movie_rating_bar)
     MaterialRatingBar mRatingBar;
+    @BindView(R.id.tv_no_trailer)
+    TextView tvNoTrailerFound;
+
+    @BindView(R.id.rv_movie_trailers)
+    RecyclerView trailersRecyclerView;
+
+    private MovieTrailersAdapter mTrailersAdapter;
+    private List<Movie> allTrailers = new ArrayList<>();
+    private Picasso mPicasso;
 
     Context mContext;
 
@@ -78,14 +94,17 @@ public class MovieDetailActivity extends AppCompatActivity {
         mContext = this;
         // init ButterKnife
         ButterKnife.bind(this);
-        // show up button
+
+        mPicasso = with(mContext);
+        mPicasso.setIndicatorsEnabled(true);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
         }
-
+        mTrailersAdapter = new MovieTrailersAdapter(mContext, allTrailers);
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
@@ -104,12 +123,14 @@ public class MovieDetailActivity extends AppCompatActivity {
             int movieid = 0;
             movieid = movie.getID();
 
-            collapsingToolbar.setTitle(movieTitle);
+            // collapsingToolbar.setTitle(movieTitle);
 
             if (movieid > 0) fetchMovieDetails(movieid);
 
             // load movie poster
             loadMoviePoster(moviePoster);
+            // load trailers
+            fetchMovieTrailers(movieid);
 
             tvMovieTitle.setText(movieTitle);
             mTextViewOverviewTitle.setText(getString(R.string.overview));
@@ -119,6 +140,10 @@ public class MovieDetailActivity extends AppCompatActivity {
             mTextViewRatings.setText(movieRatings);
             mRatingBar.setRating(Float.parseFloat(movieRatings));
             mTextViewVoteCount.setText(movie.getFormattedVoteCount() + " " + getString(R.string.movie_ratings).toLowerCase());
+
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+            trailersRecyclerView.setLayoutManager(linearLayoutManager);
+            trailersRecyclerView.setAdapter(mTrailersAdapter);
         }
     }
 
@@ -137,9 +162,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     // load movie poster
-    private void loadMoviePoster (final ImageView target) {
-        if (posterLowRes != null) Picasso.with(this)
-                .load(posterLowRes)
+    private void loadMoviePoster(final ImageView target) {
+        if (posterLowRes != null)
+                mPicasso.load(posterLowRes)
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.no_preview)
                 .into(target);
@@ -147,15 +172,15 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     // load movie backdrop
     private void loadMovieBackdrop(String url, final ImageView target) {
-        Picasso.with(MovieDetailActivity.this)
-                .load(url)
+        mPicasso.load(url)
                 .noPlaceholder()
                 .into(target, new Callback() {
                     @Override
                     public void onSuccess() {
                     }
 
-                    @Override // if error loading backdrop. fallback to original movie poster as backdrop
+                    @Override
+                    // if error loading backdrop. fallback to original movie poster as backdrop
                     public void onError() {
                         loadMoviePoster(target);
                     }
@@ -196,18 +221,53 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
     }
 
-    private void scheduleStartPostponedTransition(final View sharedElement) {
-        sharedElement.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            startPostponedEnterTransition();
+    private void fetchMovieTrailers(final int movieID) {
+        if (TMDB.isDeviceConnected(mContext)) {
+            AndroidNetworking.get(TMDB.getMovieTrailers(movieID))
+                    .setPriority(Priority.MEDIUM)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            List<Movie> trailersList = new ArrayList<Movie>();
+                            try {
+                                JSONArray res = response.getJSONArray(getString(R.string.json_response_results));
+                                int length = res.length();
+                                if (length > 0) {
+                                    for (int i = 0; i < length; i++) {
+                                        JSONObject trailerObj = (JSONObject) res.get(i);
+                                        trailersList.add(
+                                                new Movie(
+                                                        movieID,
+                                                        trailerObj.getString("key")
+                                                )
+                                        );
+                                    }
+                                    allTrailers.addAll(trailersList);
+                                    trailersRecyclerView.setAdapter(mTrailersAdapter);
+                                    mTrailersAdapter.notifyItemRangeInserted(mTrailersAdapter.getItemCount(), allTrailers.size() - 1);
+                                } else {
+                                    toggleTrailersNotFound();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        return true;
-                    }
-                });
+
+                        @Override
+                        public void onError(ANError anError) {
+                            Log.d(TAG, anError.getMessage());
+                        }
+                    });
+        } else {
+            toggleTrailersNotFound();
+        }
+    }
+
+    private void toggleTrailersNotFound() {
+        if (tvNoTrailerFound.getVisibility() == View.GONE)
+            tvNoTrailerFound.setVisibility(View.VISIBLE);
+        else tvNoTrailerFound.setVisibility(View.GONE);
     }
 
     // share movie with friends :)
