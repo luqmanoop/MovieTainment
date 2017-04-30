@@ -274,10 +274,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        app:borderWidth="2dp"
         android:clickable="true"
+        app:fabSize="normal"
         android:onClick="shareMovie"
         android:src="@android:drawable/ic_menu_share"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|right|end"/>
+        android:layout_gravity="bottom|end"/>
 
 </android.support.design.widget.CoordinatorLayout>
