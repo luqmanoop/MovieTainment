@@ -14,9 +14,12 @@ public abstract class TMDB {
             API_KEY_QUERY_PARAM = "api_key",
             POPULARITY = "popular", // sort movies by popularity
             RATINGS = "top_rated", // sort movies by user ratings
-            DISCOVER = "discover",
             MOVIE = "movie",
-            TRAILERS = "videos";
+            TRAILERS = "videos",
+            YOUTUBE_HOMEPAGE = "https://www.youtube.com/",
+            YOUTUBE_WATCH_PATH = "watch",
+            YOUTUBE_WATCH_QUERY_PARAM = "v";
+
     public static final String PAGE_QUERY_PARAM = "page";
 
     // get movies url
@@ -84,6 +87,15 @@ public abstract class TMDB {
                 .appendPath(String.valueOf(movieID))
                 .appendPath(TRAILERS)
                 .appendQueryParameter(API_KEY_QUERY_PARAM, API_KEY)
+                .build()
+                .toString();
+    }
+
+    public static String buildTrailerURL(String vidKey) {
+        return Uri.parse(YOUTUBE_HOMEPAGE)
+                .buildUpon()
+                .appendPath(YOUTUBE_WATCH_PATH)
+                .appendQueryParameter(YOUTUBE_WATCH_QUERY_PARAM, vidKey)
                 .build()
                 .toString();
     }
