@@ -1,5 +1,6 @@
 package com.soundwebcraft.movietainment;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -15,7 +16,9 @@ import android.text.TextUtils;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -167,7 +170,22 @@ public class MovieDetailActivity extends AppCompatActivity {
                 mPicasso.load(posterLowRes)
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.no_preview)
-                .into(target);
+                .into(target, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        target.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                revealAnimation(target, 600);
+                            }
+                        }, 100);
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
     }
 
     // load movie backdrop
@@ -177,6 +195,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                 .into(target, new Callback() {
                     @Override
                     public void onSuccess() {
+                        revealAnimation(target, 1000);
                     }
 
                     @Override
@@ -268,6 +287,26 @@ public class MovieDetailActivity extends AppCompatActivity {
         if (tvNoTrailerFound.getVisibility() == View.GONE)
             tvNoTrailerFound.setVisibility(View.VISIBLE);
         else tvNoTrailerFound.setVisibility(View.GONE);
+    }
+
+    // reveal animation
+    void revealAnimation(ImageView imageView, long duration) {
+        if (Build.VERSION.SDK_INT > 20) {
+            int cx = (imageView.getLeft() + imageView.getRight()) / 2;
+            int cy = (imageView.getTop() + imageView.getBottom()) / 2;
+            int finalRad = (int) Math.hypot(imageView.getWidth(), imageView.getHeight());
+            Animator reveal = ViewAnimationUtils.createCircularReveal(
+                    imageView,
+                    cx,
+                    cy,
+                    0,
+                    finalRad
+            );
+            reveal.setDuration(duration);
+            reveal.setInterpolator(new DecelerateInterpolator());
+            imageView.setVisibility(View.VISIBLE);
+            reveal.start();
+        }
     }
 
     // share movie with friends :)
