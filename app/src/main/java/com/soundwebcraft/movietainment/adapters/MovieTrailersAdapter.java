@@ -1,6 +1,8 @@
 package com.soundwebcraft.movietainment.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 
 import com.soundwebcraft.movietainment.R;
 import com.soundwebcraft.movietainment.models.Movie;
+import com.soundwebcraft.movietainment.utils.TMDB;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -59,6 +62,22 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
         public TrailerViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int clickedView = getAdapterPosition();
+                    Movie movie = mTrailers.get(clickedView);
+                    String videoKey = movie.getYoutubeKey();
+                    // get the trailer Uri
+                    Uri trailerUri = Uri.parse(TMDB.buildTrailerURL(videoKey));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, trailerUri);
+                    // start activity only if the activity resolves successfully
+                    if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+                        mContext.startActivity(intent);
+                    }
+                }
+            });
         }
     }
 }
