@@ -31,7 +31,7 @@
     <string name="json_response_movie_id">id</string>
     <string name="json_response_released_date">release_date</string>
     <string name="json_response_vote_average">vote_average</string>
-    <string name="json_response_overview">overview</string>]
+    <string name="json_response_overview">overview</string>
     <string name="json_response_imdb_id">imdb_id</string>
     <string name="json_response_genres">genres</string>
     <string name="json_response_genre_name">name</string>
