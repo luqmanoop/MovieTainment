@@ -167,25 +167,25 @@ public class MovieDetailActivity extends AppCompatActivity {
     // load movie poster
     private void loadMoviePoster(final ImageView target) {
         if (posterLowRes != null)
-                mPicasso.load(posterLowRes)
-                .placeholder(R.drawable.loading)
-                .error(R.drawable.no_preview)
-                .into(target, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        target.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                revealAnimation(target, 600);
-                            }
-                        }, 100);
-                    }
+            mPicasso.load(posterLowRes)
+                    .placeholder(R.drawable.loading)
+                    .error(R.drawable.no_preview)
+                    .into(target, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            target.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    revealAnimation(target, 600);
+                                }
+                            }, 100);
+                        }
 
-                    @Override
-                    public void onError() {
+                        @Override
+                        public void onError() {
 
-                    }
-                });
+                        }
+                    });
     }
 
     // load movie backdrop
@@ -195,7 +195,12 @@ public class MovieDetailActivity extends AppCompatActivity {
                 .into(target, new Callback() {
                     @Override
                     public void onSuccess() {
-                        revealAnimation(target, 1000);
+                        target.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                revealAnimation(target, 1000);
+                            }
+                        }, 100);
                     }
 
                     @Override
