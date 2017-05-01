@@ -4,4 +4,11 @@
     <color name="colorPrimaryDark">#302e50</color>
     <color name="colorAccent">#FF4081</color>
     <color name="divider">#e4e3e3</color>
+
+    <color name="avatar1">#4A7BA7</color>
+    <color name="avatar2">#04B4B3</color>
+    <color name="avatar3">#10CAC9</color>
+    <color name="avatar4">#F5A623</color>
+    <color name="avatar5">#FF7D50</color>
+    <color name="avatar6">#D93218</color>
 </resources>
