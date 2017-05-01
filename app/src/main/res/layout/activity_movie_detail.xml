@@ -321,15 +321,51 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/reviews_title"/>
 
-                <TextView
-                    android:id="@+id/tv_no_review"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/review_result_container"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/misc_not_available"
+                    android:orientation="vertical"
                     android:visibility="gone"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rv_reviews"/>
+                    app:layout_constraintTop_toBottomOf="@+id/rv_reviews">
+
+                    <View
+                        android:id="@+id/view5"
+                        style="@style/Default.DividerStyle"
+                        android:layout_width="match_parent"
+                        app:layout_constraintTop_toBottomOf="@+id/review_result_container"/>
+
+                    <TextView
+                        android:id="@+id/tv_no_review"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:text="@string/misc_not_available"
+                        app:layout_constraintTop_toBottomOf="@+id/view5"
+                        tools:text="VIEW ALL REVIEWS"/>
+                    <Button
+                        android:id="@+id/bt_show_all_reviews"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:layout_width="match_parent"
+                        android:fontFamily="sans-serif-medium"
+                        android:textSize="16sp"
+                        android:layout_height="wrap_content"
+                        style="?android:borderlessButtonStyle"
+                        android:layout_gravity="center"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_no_review"
+                        android:text="VIEW ALL REVIEWS"/>
+
+                    <View
+                        android:id="@+id/view6"
+                        style="@style/Default.DividerStyle"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="0dp"
+                        app:layout_constraintTop_toBottomOf="@+id/bt_show_all_reviews"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
