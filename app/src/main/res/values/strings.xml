@@ -46,4 +46,7 @@
 
     <string name="mime_type_text_document">text/plain</string><string name="date_format">%1$tB %1$te, %1$tY</string>
     <string name="menu_share">Share</string>
+    <string name="json_response_review_author">author</string>
+    <string name="json_response_review_content">content</string>
+    <string name="json_response_review_total_page">total_pages</string>
 </resources>
