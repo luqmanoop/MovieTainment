@@ -328,7 +328,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                                     trailersRecyclerView.setAdapter(mTrailersAdapter);
                                     mTrailersAdapter.notifyItemRangeInserted(mTrailersAdapter.getItemCount(), allTrailers.size() - 1);
                                 } else {
-                                    toggleTrailersNotFound();
+                                    toggleViewVisibility(tvNoTrailerFound);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -341,7 +341,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            toggleTrailersNotFound();
+            toggleViewVisibility(tvNoTrailerFound);
         }
     }
 
@@ -372,13 +372,17 @@ public class MovieDetailActivity extends AppCompatActivity {
                                 mReviewsAdapter.notifyItemRangeInserted(mReviewsAdapter.getItemCount(), allReviews.size() - 1);
                                 reviewResultContainer.setVisibility(View.VISIBLE);
                             } else {
-                                dividerTop.setVisibility(View.GONE);
-                                dividerBottom.setVisibility(View.GONE);
-                                btnShowAllReviews.setVisibility(View.GONE);
-                                tvNoReview.setVisibility(View.VISIBLE);
+                                List<View> viewsToToggle = new ArrayList<View>();
+                                viewsToToggle.add(reviewResultContainer);
+                                viewsToToggle.add(dividerTop);
+                                viewsToToggle.add(dividerBottom);
+                                viewsToToggle.add(btnShowAllReviews);
+                                viewsToToggle.add(tvNoReview);
+
+                                toggleViewVisibility(viewsToToggle);
+
                                 tvNoReview.setText(R.string.misc_no_review);
                                 tvNoReview.setGravity(Gravity.NO_GRAVITY);
-                                reviewResultContainer.setVisibility(View.VISIBLE);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -392,10 +396,19 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
     }
 
-    private void toggleTrailersNotFound() {
-        if (tvNoTrailerFound.getVisibility() == View.GONE)
-            tvNoTrailerFound.setVisibility(View.VISIBLE);
-        else tvNoTrailerFound.setVisibility(View.GONE);
+    private void toggleViewVisibility(View target) {
+        if (target.getVisibility() == View.GONE || target.getVisibility() == View.INVISIBLE)
+            target.setVisibility(View.VISIBLE);
+        else target.setVisibility(View.GONE);
+    }
+
+    private void toggleViewVisibility(List<View> target) {
+        for (View view :
+                target) {
+            if (view.getVisibility() == View.GONE || view.getVisibility() == View.INVISIBLE)
+                view.setVisibility(View.VISIBLE);
+            else view.setVisibility(View.GONE);
+        }
     }
 
     // reveal animation
