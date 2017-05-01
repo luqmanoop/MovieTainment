@@ -174,6 +174,28 @@
                 tools:text="Science,Science fiction, Drama, Action,Science fiction, Drama, Action "/>
 
             <TextView
+                android:id="@+id/tv_duration_title"
+                style="@style/TitleStyle"
+                android:text="Duration"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tv_duration"
+                app:layout_constraintLeft_toLeftOf="@+id/tv_genre_title"
+                />
+
+            <TextView
+                android:id="@+id/tv_duration"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="14sp"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="@+id/tv_genres"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_genres"
+                android:text="@string/misc_loading_text"
+                />
+
+            <TextView
                 android:id="@+id/tv_release_date_title"
                 style="@style/TitleStyle"
                 android:text="@string/movie_release_date"
@@ -189,9 +211,9 @@
                 android:fontFamily="sans-serif-medium"
                 android:textSize="14sp"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="@+id/tv_genres"
+                app:layout_constraintLeft_toLeftOf="@+id/tv_duration"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_genres"
+                app:layout_constraintTop_toBottomOf="@+id/tv_duration"
                 tools:text="May 09 2017"/>
 
             <View
