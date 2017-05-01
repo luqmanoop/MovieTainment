@@ -299,8 +299,8 @@
         app:borderWidth="2dp"
         android:clickable="true"
         app:fabSize="normal"
-        android:onClick="shareMovie"
-        android:src="@android:drawable/ic_menu_share"
+        android:id="@+id/fab_favorite"
+        android:src="@drawable/ic_star_24dp"
         android:layout_gravity="bottom|end"/>
 
 </android.support.design.widget.CoordinatorLayout>
