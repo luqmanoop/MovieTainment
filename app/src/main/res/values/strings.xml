@@ -42,4 +42,5 @@
 
 
     <string name="mime_type_text_document">text/plain</string><string name="date_format">%1$tB %1$te, %1$tY</string>
+    <string name="menu_share">Share</string>
 </resources>
