@@ -16,6 +16,7 @@ public abstract class TMDB {
             RATINGS = "top_rated", // sort movies by user ratings
             MOVIE = "movie",
             TRAILERS = "videos",
+            REVIEWS = "reviews",
             YOUTUBE_HOMEPAGE = "https://www.youtube.com/",
             YOUTUBE_WATCH_PATH = "watch",
             YOUTUBE_WATCH_QUERY_PARAM = "v";
@@ -96,6 +97,17 @@ public abstract class TMDB {
                 .buildUpon()
                 .appendPath(YOUTUBE_WATCH_PATH)
                 .appendQueryParameter(YOUTUBE_WATCH_QUERY_PARAM, vidKey)
+                .build()
+                .toString();
+    }
+
+    public static String getMovieReviews (int movieID) {
+        return Uri.parse(API_BASE_URL)
+                .buildUpon()
+                .appendPath(MOVIE)
+                .appendPath(String.valueOf(movieID))
+                .appendPath(REVIEWS)
+                .appendQueryParameter(API_KEY_QUERY_PARAM, API_KEY)
                 .build()
                 .toString();
     }
