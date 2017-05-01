@@ -198,4 +198,27 @@ public class Movie {
                 this.getVoteAverage() +
                 "\n";
     }
+
+    public static class MovieReviews {
+        String author;
+        String content;
+
+        public MovieReviews(String author, String content) {
+            this.author = author;
+            this.content = content;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        @Override
+        public String toString() {
+            return getAuthor() + ": " + getContent();
+        }
+    }
 }
