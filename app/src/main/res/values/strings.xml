@@ -28,6 +28,7 @@
     <string name="misc_share_element_poster">poster</string>
     <string name="misc_loading_text">"Loading…"</string>
     <string name="misc_no_connection">Internet apppears to be offline</string>
+    <string name="misc_no_review">No review available</string>
 
     <!-- json response strings -->
     <string name="json_response_results">results</string>
@@ -42,11 +43,13 @@
     <string name="json_response_genres">genres</string>
     <string name="json_response_genre_name">name</string>
     <string name="json_response_movie_backdrop">backdrop_path</string>
+    <string name="json_response_review_author">author</string>
+    <string name="json_response_review_content">content</string>
+    <string name="json_response_review_total_page">total_pages</string>
+
 
 
     <string name="mime_type_text_document">text/plain</string><string name="date_format">%1$tB %1$te, %1$tY</string>
     <string name="menu_share">Share</string>
-    <string name="json_response_review_author">author</string>
-    <string name="json_response_review_content">content</string>
-    <string name="json_response_review_total_page">total_pages</string>
+
 </resources>
