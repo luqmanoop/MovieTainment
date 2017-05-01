@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AnimationUtils;
@@ -157,6 +158,17 @@ public class MovieDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.share_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemSelected = item.getItemId();
+        switch (itemSelected) {
+            case R.id.menu_share:
+                shareMovie();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // run slide animation on movie sypnosis
@@ -336,7 +348,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     // share movie with friends :)
-    public void shareMovie(View view) {
+    public void shareMovie() {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType(getString(R.string.mime_type_text_document));
 
