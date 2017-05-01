@@ -73,6 +73,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     MaterialRatingBar mRatingBar;
     @BindView(R.id.tv_no_trailer)
     TextView tvNoTrailerFound;
+    @BindView(R.id.tv_duration)
+    TextView tvDuration;
 
     @BindView(R.id.rv_movie_trailers)
     RecyclerView trailersRecyclerView;
@@ -233,6 +235,18 @@ public class MovieDetailActivity extends AppCompatActivity {
                             loadMovieBackdrop(Movie.getBackdrop(backdropPath), movieBackdrop);
                             if (!TextUtils.isEmpty(genres)) mGenres.setText(genres);
                             else mGenres.setText(R.string.misc_not_available);
+                            String runtime = response.getString(getString(R.string.json_response_runtime));
+                            try {
+                                int i = Integer.parseInt(runtime) / 60;
+                                int remainder = Integer.parseInt(runtime) % 60;
+                                String result = "";
+                                if (i != 0) result += i + getString(R.string.movie_runtime_hour);
+                                if (remainder != 0) result += remainder + getString(R.string.movie_runtime_minute);
+                                tvDuration.setText(result);
+                            } catch (NumberFormatException e) {
+                                tvDuration.setText(getString(R.string.misc_not_available));
+                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
