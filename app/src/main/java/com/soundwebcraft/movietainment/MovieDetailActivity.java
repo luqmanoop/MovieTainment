@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.transition.Slide;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AnimationUtils;
@@ -150,6 +151,12 @@ public class MovieDetailActivity extends AppCompatActivity {
             trailersRecyclerView.setLayoutManager(linearLayoutManager);
             trailersRecyclerView.setAdapter(mTrailersAdapter);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.share_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     // run slide animation on movie sypnosis
