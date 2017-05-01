@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,19 +14,23 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.soundwebcraft.movietainment.adapters.MovieReviewsAdapter;
 import com.soundwebcraft.movietainment.adapters.MovieTrailersAdapter;
 import com.soundwebcraft.movietainment.models.Movie;
 import com.soundwebcraft.movietainment.utils.TMDB;
@@ -93,6 +96,21 @@ public class MovieDetailActivity extends AppCompatActivity {
             movieTitle = null,
             movieReleased = null,
             movieRatings = null;
+    private List<Movie.MovieReviews> allReviews = new ArrayList<>();
+    @BindView(R.id.rv_reviews)
+    RecyclerView reviewsRecylcerView;
+    @BindView(R.id.review_result_container)
+    LinearLayout reviewResultContainer;
+    @BindView(R.id.view5)
+    View dividerTop;
+    @BindView(R.id.view6)
+    View dividerBottom;
+    @BindView(R.id.tv_no_review)
+    TextView tvNoReview;
+    @BindView(R.id.bt_show_all_reviews)
+    Button btnShowAllReviews;
+
+    private MovieReviewsAdapter mReviewsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +130,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
         mTrailersAdapter = new MovieTrailersAdapter(mContext, allTrailers);
-        CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mReviewsAdapter = new MovieReviewsAdapter(mContext, allReviews);
 
         Intent otherIntent = getIntent();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -130,14 +147,14 @@ public class MovieDetailActivity extends AppCompatActivity {
             int movieid = 0;
             movieid = movie.getID();
 
-            // collapsingToolbar.setTitle(movieTitle);
-
             if (movieid > 0) fetchMovieDetails(movieid);
 
             // load movie poster
             loadMoviePoster(moviePoster);
             // load trailers
             fetchMovieTrailers(movieid);
+            // fetch reviews
+            fetchMovieReviews(movieid);
 
             tvMovieTitle.setText(movieTitle);
             mTextViewOverviewTitle.setText(getString(R.string.overview));
@@ -151,6 +168,12 @@ public class MovieDetailActivity extends AppCompatActivity {
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             trailersRecyclerView.setLayoutManager(linearLayoutManager);
             trailersRecyclerView.setAdapter(mTrailersAdapter);
+
+            final LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+            reviewsRecylcerView.setLayoutManager(linearLayoutManager2);
+            reviewsRecylcerView.setHasFixedSize(true);
+            reviewsRecylcerView.setNestedScrollingEnabled(false);
+            reviewsRecylcerView.setAdapter(mReviewsAdapter);
         }
     }
 
@@ -260,7 +283,8 @@ public class MovieDetailActivity extends AppCompatActivity {
                                 int remainder = Integer.parseInt(runtime) % 60;
                                 String result = "";
                                 if (i != 0) result += i + getString(R.string.movie_runtime_hour);
-                                if (remainder != 0) result += remainder + getString(R.string.movie_runtime_minute);
+                                if (remainder != 0)
+                                    result += remainder + getString(R.string.movie_runtime_minute);
                                 tvDuration.setText(result);
                             } catch (NumberFormatException e) {
                                 tvDuration.setText(getString(R.string.misc_not_available));
@@ -319,6 +343,53 @@ public class MovieDetailActivity extends AppCompatActivity {
         } else {
             toggleTrailersNotFound();
         }
+    }
+
+    private void fetchMovieReviews(final int movieID) {
+        AndroidNetworking.get(TMDB.getMovieReviews(movieID))
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int totalPages = Integer.parseInt(response.getString(getString(R.string.json_response_review_total_page)));
+                            List<Movie.MovieReviews> movieReviewsList = new ArrayList<Movie.MovieReviews>();
+                            JSONArray res = response.getJSONArray(getString(R.string.json_response_results));
+                            int length = res.length();
+                            if (length > 0) {
+                                if (length > 3) length = 3;
+                                for (int i = 0; i < length; i++) {
+                                    JSONObject reviewObj = (JSONObject) res.get(i);
+                                    movieReviewsList.add(new Movie.MovieReviews(
+                                            reviewObj.getString(getString(R.string.json_response_review_author)),
+                                            reviewObj.getString(getString(R.string.json_response_review_content))
+                                    ));
+                                    Log.d(TAG, movieReviewsList.get(i).toString());
+                                }
+                                allReviews.addAll(movieReviewsList);
+                                reviewsRecylcerView.setAdapter(mReviewsAdapter);
+                                mReviewsAdapter.notifyItemRangeInserted(mReviewsAdapter.getItemCount(), allReviews.size() - 1);
+                                reviewResultContainer.setVisibility(View.VISIBLE);
+                            } else {
+                                dividerTop.setVisibility(View.GONE);
+                                dividerBottom.setVisibility(View.GONE);
+                                btnShowAllReviews.setVisibility(View.GONE);
+                                tvNoReview.setVisibility(View.VISIBLE);
+                                tvNoReview.setText(R.string.misc_no_review);
+                                tvNoReview.setGravity(Gravity.NO_GRAVITY);
+                                reviewResultContainer.setVisibility(View.VISIBLE);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.d(TAG, anError.getMessage());
+                    }
+                });
     }
 
     private void toggleTrailersNotFound() {
