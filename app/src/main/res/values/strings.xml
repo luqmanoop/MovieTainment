@@ -11,6 +11,8 @@
     <string name="movie_ratings">Ratings</string>
     <string name="movie_genre">Genre</string>
     <string name="movie_release_date">Release Date</string>
+    <string name="movie_trailers">Trailer(s)</string>
+    <string name="movie_duration">Duration</string>
     <string name="movie_runtime_hour">h </string>
     <string name="movie_runtime_minute">m</string>
     <!-- movie share strings-->
