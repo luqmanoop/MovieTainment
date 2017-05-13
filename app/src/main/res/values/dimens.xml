@@ -2,8 +2,6 @@
 <resources>
     <dimen name="fab_margin">20dp</dimen>
     <dimen name="detail_backdrop_height">200dp</dimen>
-    <dimen name="backdrop_title">30dp</dimen>
-    <dimen name="backdrop_subtitle">18dp</dimen>
     <dimen name="card_margin">5dp</dimen>
     <dimen name="card_album_radius">3dp</dimen>
 </resources>

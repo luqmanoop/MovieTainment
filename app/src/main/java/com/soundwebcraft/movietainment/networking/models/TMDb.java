@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Parcel
-public class TmdbApi {
+public class TMDb {
     @SerializedName("poster_path")
     @Expose
     private String posterPath;
@@ -45,16 +45,16 @@ public class TmdbApi {
     private Double voteAverage;
 
     // base url for loading tmdb images
-    public static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/",
+    private static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/",
             YOUTUBE_VID_POSTER_BASE_URL = "https://img.youtube.com/vi/",
             YOUTUBE_DEFAULT_VID_THUMBNAIL = "default.jpg",
             POSTER_SIZE_SM = "w185",
             POSTER_SIZE_BG = "w342";
 
-    public TmdbApi() {
+    public TMDb() {
     }
 
-    public TmdbApi(String original_title, String poster_path, int id, String overview, double vote_average, Integer vote_count, String release_date) {
+    public TMDb(String original_title, String poster_path, int id, String overview, double vote_average, Integer vote_count, String release_date) {
         this.originalTitle = original_title;
         this.posterPath = poster_path;
         this.id = id;
@@ -202,6 +202,7 @@ public class TmdbApi {
                     .toString();
         }
     }
+
     public class Trailers {
         @SerializedName("id")
         @Expose

@@ -5,12 +5,12 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
-public class General {
+public class AppUtils {
     private static final String YOUTUBE_HOMEPAGE = "https://www.youtube.com/",
             YOUTUBE_WATCH_PATH = "watch",
             YOUTUBE_WATCH_QUERY_PARAM = "v";
 
-    private General() {
+    private AppUtils() {
     }
 
     public static void updateRecycler(RecyclerView.Adapter adapter, List data) {

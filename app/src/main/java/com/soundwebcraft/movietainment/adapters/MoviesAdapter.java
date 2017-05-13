@@ -14,12 +14,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.soundwebcraft.movietainment.MovieDetailActivity;
 import com.soundwebcraft.movietainment.MoviesActivity;
 import com.soundwebcraft.movietainment.R;
-import com.soundwebcraft.movietainment.models.Movie;
+import com.soundwebcraft.movietainment.networking.models.TMDb;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
@@ -30,18 +29,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
-    public static final String TAG = MoviesAdapter.class.getSimpleName(),
-            HIGH_RES_POSTER = "HIGH_RES_POSTER",
-            MOVIE_TITLE = "MOVIE_TITLE",
-            MOVIE_ID = "MOVIE_ID";
+    public static final String TAG = MoviesAdapter.class.getSimpleName();
 
-    private List<Movie> mMovies;
-    private Context mContext;
-    private Toast mToast;
+    private final List<TMDb> mResults;
+    private final Context mContext;
 
-    public MoviesAdapter(Context context, List<Movie> movies) {
+    public MoviesAdapter(List<TMDb> results, Context context) {
+        mResults = results;
         mContext = context;
-        mMovies = movies;
     }
 
     @Override
@@ -55,27 +50,27 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        Movie movie = mMovies.get(position);
+        TMDb result = mResults.get(position);
 
         TextView movieTitle = holder.titleTextView,
                 movieIDTextView = holder.movieIDTextView,
                 movieOverview = holder.overview,
                 movieRatings = holder.voteAverage,
                 movieReleasedDate = holder.releasedDate;
-        movieTitle.setText(movie.getOriginalTitle());
+        movieTitle.setText(result.getOriginalTitle());
 
-        movieIDTextView.setText(String.valueOf(movie.getID()));
-        movieOverview.setText(movie.getOverview());
-        movieRatings.setText(String.valueOf(movie.getVoteAverage()));
-        movieReleasedDate.setText(movie.getReleaseDate());
+        movieIDTextView.setText(String.valueOf(result.getId()));
+        movieOverview.setText(result.getOverview());
+        movieRatings.setText(String.valueOf(result.getVoteAverage()));
+        movieReleasedDate.setText(result.getReleaseDate());
 
         ImageView imageView = holder.posterImageView;
         // set the movie poster content description
-        String movieContentDescription = movie.getOriginalTitle();
+        String movieContentDescription = result.getOriginalTitle();
         imageView.setContentDescription(movieContentDescription);
         // load the movie poster into the imageview
         Picasso.with(mContext)
-                .load(movie.getPoster())
+                .load(result.getPoster())
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.no_preview)
                 .into(imageView);
@@ -87,7 +82,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     @Override
     public int getItemCount() {
-        return mMovies.size();
+        return mResults.size();
+    }
+
+    public void updateViews(List<TMDb> results) {
+        mResults.addAll(results);
+        notifyDataSetChanged();
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
@@ -117,8 +117,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    Movie clickedMovie = mMovies.get(position);
-                    int movieId = clickedMovie.getID();
+                    TMDb clickedMovie = mResults.get(position);
+                    int movieId = clickedMovie.getId();
                     String highResPoster = clickedMovie.getPoster(),
                             movieTitle = clickedMovie.getOriginalTitle(),
                             movieOv = clickedMovie.getOverview(),
@@ -126,13 +126,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
                     Intent intent = new Intent(mContext, MovieDetailActivity.class);
 
-                    Movie movie = new Movie(
+                    TMDb movie = new TMDb(
                             movieTitle,
-                            mMovies.get(position).getPosterPath(),
+                            mResults.get(position).getPosterPath(),
                             movieId,
                             movieOv,
-                            mMovies.get(position).getVoteAverage(),
-                            mMovies.get(position).getVoteCount(),
+                            mResults.get(position).getVoteAverage(),
+                            mResults.get(position).getVoteCount(),
                             movieRD
                     );
                     intent.putExtra(Intent.EXTRA_TEXT, Parcels.wrap(movie));

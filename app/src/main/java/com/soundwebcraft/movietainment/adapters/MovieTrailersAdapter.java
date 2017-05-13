@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.soundwebcraft.movietainment.R;
-import com.soundwebcraft.movietainment.models.Movie;
-import com.soundwebcraft.movietainment.utils.TMDB;
+import com.soundwebcraft.movietainment.networking.models.TMDb;
+import com.soundwebcraft.movietainment.utils.AppUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,12 +21,12 @@ import butterknife.ButterKnife;
 
 
 public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdapter.TrailerViewHolder> {
-    private Context mContext;
-    private List<Movie> mTrailers;
+    private final Context mContext;
+    private final List<TMDb.Trailers> mTrailersList;
 
-    public MovieTrailersAdapter(Context context, List<Movie> trailers) {
-        this.mContext = context;
-        mTrailers  = trailers;
+    public MovieTrailersAdapter(Context context, List<TMDb.Trailers> trailersList) {
+        mContext = context;
+        mTrailersList = trailersList;
     }
 
     @Override
@@ -40,10 +40,11 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
 
     @Override
     public void onBindViewHolder(MovieTrailersAdapter.TrailerViewHolder holder, int position) {
-        Movie movie = mTrailers.get(position);
+        // Movie movie = mTrailers.get(position);
+        TMDb.Trailers trailer = mTrailersList.get(position);
         ImageView trailerIv = holder.trailerPoster;
         Picasso.with(mContext)
-                .load(movie.getTrailerThumbnail())
+                .load(trailer.getTrailerThumbnail())
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.no_preview)
                 .into(trailerIv);
@@ -51,7 +52,7 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
 
     @Override
     public int getItemCount() {
-        return mTrailers.size();
+        return mTrailersList.size();
     }
 
     public class TrailerViewHolder extends RecyclerView.ViewHolder {
@@ -67,10 +68,10 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
                 @Override
                 public void onClick(View v) {
                     int clickedView = getAdapterPosition();
-                    Movie movie = mTrailers.get(clickedView);
-                    String videoKey = movie.getYoutubeKey();
+                    TMDb.Trailers trailer = mTrailersList.get(clickedView);
+                    String videoKey = trailer.getKey();
                     // get the trailer Uri
-                    Uri trailerUri = Uri.parse(TMDB.buildTrailerURL(videoKey));
+                    Uri trailerUri = Uri.parse(AppUtils.buildTrailerURL(videoKey));
                     Intent intent = new Intent(Intent.ACTION_VIEW, trailerUri);
                     // start activity only if the activity resolves successfully
                     if (intent.resolveActivity(mContext.getPackageManager()) != null) {

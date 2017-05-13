@@ -48,7 +48,7 @@
                     android:layout_marginTop="60dp"
                     android:src="@drawable/youtube_play_no_border"
                     android:visibility="invisible"
-                    />
+                    android:contentDescription="@string/youtube_play_btn"/>
 
             </FrameLayout>
 
@@ -86,7 +86,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/ratings"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/movie_title"
-                app:srcCompat="@drawable/loading"/>
+                app:srcCompat="@drawable/loading"
+                android:contentDescription="@string/movie_poster"/>
 
             <TextView
                 android:id="@+id/movie_title"
@@ -281,7 +282,7 @@
                     android:id="@+id/tv_no_trailer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/misc_not_available"
+                    android:text="@string/misc_no_trailer"
                     android:visibility="gone"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -341,9 +342,8 @@
                         android:id="@+id/tv_no_review"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:visibility="gone"
-                        android:text="@string/misc_not_available"
+                        android:text="@string/misc_no_review"
                         app:layout_constraintTop_toBottomOf="@+id/view5"
                         tools:text="VIEW ALL REVIEWS"/>
                     <Button
@@ -356,7 +356,7 @@
                         style="?android:borderlessButtonStyle"
                         android:layout_gravity="center"
                         app:layout_constraintTop_toBottomOf="@+id/tv_no_review"
-                        android:text="VIEW ALL REVIEWS"/>
+                        android:text="@string/misc_btn_all_review"/>
 
                     <View
                         android:id="@+id/view6"

@@ -5,31 +5,31 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ApiResponse {
+public class TMDbResponse {
     public class Movies {
         @SerializedName("results")
         @Expose
-        private List<TmdbApi> results = null;
+        private List<TMDb> results = null;
 
-        public List<TmdbApi> getMovies() {
+        public List<TMDb> getMovies() {
             return results;
         }
     }
     public class Trailers {
         @SerializedName("results")
         @Expose
-        private List<TmdbApi.Trailers> trailers = null;
+        private List<TMDb.Trailers> trailers = null;
 
-        public List<TmdbApi.Trailers> getTrailers() {
+        public List<TMDb.Trailers> getTrailers() {
             return trailers;
         }
     }
     public class Reviews {
         @SerializedName("results")
         @Expose
-        private List<TmdbApi.Reviews> reviews = null;
+        private List<TMDb.Reviews> reviews = null;
 
-        public List<TmdbApi.Reviews> getReviews () {
+        public List<TMDb.Reviews> getReviews () {
             return reviews;
         }
     }

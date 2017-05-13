@@ -13,8 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.transition.Slide;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,20 +24,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.androidnetworking.AndroidNetworking;
-import com.androidnetworking.common.Priority;
-import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.soundwebcraft.movietainment.adapters.MovieReviewsAdapter;
 import com.soundwebcraft.movietainment.adapters.MovieTrailersAdapter;
-import com.soundwebcraft.movietainment.models.Movie;
-import com.soundwebcraft.movietainment.utils.TMDB;
+import com.soundwebcraft.movietainment.networking.data.remote.TmdbService;
+import com.soundwebcraft.movietainment.networking.models.TMDb;
+import com.soundwebcraft.movietainment.networking.models.TMDbResponse;
+import com.soundwebcraft.movietainment.networking.utils.TmdbUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
@@ -48,13 +41,15 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
+import retrofit2.Call;
 
+import static com.soundwebcraft.movietainment.utils.AppUtils.updateRecycler;
 import static com.squareup.picasso.Picasso.with;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
-    public static final String TAG = MovieDetailActivity.class.getSimpleName(),
-            IMDB_MOVIE_PREVIEW = "http://www.imdb.com/title/";
+    public static final String TAG = MovieDetailActivity.class.getSimpleName();
+    private static final String IMDB_MOVIE_PREVIEW = "http://www.imdb.com/title/";
 
     @BindView(R.id.movie_title)
     TextView tvMovieTitle;
@@ -80,23 +75,6 @@ public class MovieDetailActivity extends AppCompatActivity {
     TextView tvNoTrailerFound;
     @BindView(R.id.tv_duration)
     TextView tvDuration;
-
-    @BindView(R.id.rv_movie_trailers)
-    RecyclerView trailersRecyclerView;
-
-    private MovieTrailersAdapter mTrailersAdapter;
-    private List<Movie> allTrailers = new ArrayList<>();
-    private Picasso mPicasso;
-
-    Context mContext;
-
-    String imdb_id = null,
-            posterLowRes = null,
-            posterHighRes = null,
-            movieTitle = null,
-            movieReleased = null,
-            movieRatings = null;
-    private List<Movie.MovieReviews> allReviews = new ArrayList<>();
     @BindView(R.id.rv_reviews)
     RecyclerView reviewsRecylcerView;
     @BindView(R.id.review_result_container)
@@ -109,8 +87,20 @@ public class MovieDetailActivity extends AppCompatActivity {
     TextView tvNoReview;
     @BindView(R.id.bt_show_all_reviews)
     Button btnShowAllReviews;
+    @BindView(R.id.rv_movie_trailers)
+    RecyclerView trailersRecyclerView;
 
+    private MovieTrailersAdapter mTrailersAdapter;
+    private Picasso mPicasso;
     private MovieReviewsAdapter mReviewsAdapter;
+    private TmdbService mService;
+    private List<TMDb.Reviews> allReviews = new ArrayList<>();
+    private List<TMDb.Trailers> allTrailers = new ArrayList<>();
+    private Context mContext;
+
+    private String imdb_id = null,
+            posterLowRes = null,
+            movieTitle = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,9 +109,13 @@ public class MovieDetailActivity extends AppCompatActivity {
         mContext = this;
         // init ButterKnife
         ButterKnife.bind(this);
+        Intent otherIntent = getIntent();
+
+        mService = TmdbUtils.getTmdbService();
 
         mPicasso = with(mContext);
         mPicasso.setIndicatorsEnabled(false);
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -129,31 +123,43 @@ public class MovieDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
+
         mTrailersAdapter = new MovieTrailersAdapter(mContext, allTrailers);
         mReviewsAdapter = new MovieReviewsAdapter(mContext, allReviews);
 
-        Intent otherIntent = getIntent();
+
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+        trailersRecyclerView.setLayoutManager(linearLayoutManager);
+
+        final LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        reviewsRecylcerView.setLayoutManager(linearLayoutManager2);
+        reviewsRecylcerView.setHasFixedSize(true);
+        reviewsRecylcerView.setNestedScrollingEnabled(false);
+
+        trailersRecyclerView.setAdapter(mTrailersAdapter);
+        reviewsRecylcerView.setAdapter(mReviewsAdapter);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slideAnimation();
         }
 
         if (otherIntent != null && otherIntent.hasExtra(Intent.EXTRA_TEXT)) {
-            Movie movie = Parcels.unwrap(otherIntent.getParcelableExtra(Intent.EXTRA_TEXT));
+            TMDb movie = Parcels.unwrap(otherIntent.getParcelableExtra(Intent.EXTRA_TEXT));
             movieTitle = movie.getOriginalTitle();
             posterLowRes = movie.getPoster();
-            posterHighRes = movie.getPoster(true);
-            movieReleased = movie.getFormattedReleaseDate();
-            movieRatings = movie.caculateRatings(movie.getVoteAverage());
+            String posterHighRes = movie.getPoster(true);
+            String movieReleased = movie.getFormattedReleaseDate();
+            String movieRatings = movie.caculateRatings(movie.getVoteAverage());
             int movieid = 0;
-            movieid = movie.getID();
+            movieid = movie.getId();
 
             if (movieid > 0) fetchMovieDetails(movieid);
 
-            // load movie poster
+            // fetch movie poster
             loadMoviePoster(moviePoster);
-            // load trailers
+            // fetch movie trailers
             fetchMovieTrailers(movieid);
-            // fetch reviews
+            // fetch movie reviews
             fetchMovieReviews(movieid);
 
             tvMovieTitle.setText(movieTitle);
@@ -164,16 +170,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             mTextViewRatings.setText(movieRatings);
             mRatingBar.setRating(Float.parseFloat(movieRatings));
             mTextViewVoteCount.setText(movie.getFormattedVoteCount() + " " + getString(R.string.movie_ratings).toLowerCase());
-
-            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-            trailersRecyclerView.setLayoutManager(linearLayoutManager);
-            trailersRecyclerView.setAdapter(mTrailersAdapter);
-
-            final LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-            reviewsRecylcerView.setLayoutManager(linearLayoutManager2);
-            reviewsRecylcerView.setHasFixedSize(true);
-            reviewsRecylcerView.setNestedScrollingEnabled(false);
-            reviewsRecylcerView.setAdapter(mReviewsAdapter);
         }
     }
 
@@ -256,145 +252,112 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     private void fetchMovieDetails(int movieID) {
-        AndroidNetworking.get(TMDB.buildMovieURL(movieID))
-                .setPriority(Priority.MEDIUM)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        String genres = "";
-                        try {
-                            imdb_id = response.getString(getString(R.string.json_response_imdb_id));
-                            JSONArray genresArray = response.getJSONArray(getString(R.string.json_response_genres));
-                            int genreLength = genresArray.length();
-                            for (int i = 0; i < genreLength; i++) {
-                                JSONObject genreObj = (JSONObject) genresArray.get(i);
-                                genres += genreObj.getString(getString(R.string.json_response_genre_name));
-                                if (genreLength - i != 1) genres += ", ";
-                            }
-                            String backdropPath = response.getString(getString(R.string.json_response_movie_backdrop));
-                            Log.d(TAG, Movie.getBackdrop(backdropPath));
-                            loadMovieBackdrop(Movie.getBackdrop(backdropPath), movieBackdrop);
-                            if (!TextUtils.isEmpty(genres)) mGenres.setText(genres);
-                            else mGenres.setText(R.string.misc_not_available);
-                            String runtime = response.getString(getString(R.string.json_response_runtime));
-                            try {
-                                int i = Integer.parseInt(runtime) / 60;
-                                int remainder = Integer.parseInt(runtime) % 60;
-                                String result = "";
-                                if (i != 0) result += i + getString(R.string.movie_runtime_hour);
-                                if (remainder != 0)
-                                    result += remainder + getString(R.string.movie_runtime_minute);
-                                tvDuration.setText(result);
-                            } catch (NumberFormatException e) {
-                                tvDuration.setText(getString(R.string.misc_not_available));
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
+        mService.getMovie(String.valueOf(movieID)).enqueue(new retrofit2.Callback<TMDb.Movie>() {
+            @Override
+            public void onResponse(Call<TMDb.Movie> call, retrofit2.Response<TMDb.Movie> response) {
+                if (response.isSuccessful()) {
+                    String backdropPath = response.body().getBackdropPath();
+                    imdb_id = response.body().getImdbId();
+                    Integer runtime = response.body().getRuntime();
+                    String genres = "";
+                    for (TMDb.Genre genre :
+                            response.body().getGenres()) {
+                        genres += genre.getName() + ", ";
 
                     }
-                });
+                    if (!TextUtils.isEmpty(genres)) mGenres.setText(genres);
+                    else mGenres.setText(R.string.misc_not_available);
+
+                    try {
+                        int i = runtime / 60;
+                        int remainder = runtime % 60;
+                        String result = "";
+                        if (i != 0) result += i + getString(R.string.movie_runtime_hour);
+                        if (remainder != 0)
+                            result += remainder + getString(R.string.movie_runtime_minute);
+                        tvDuration.setText(result);
+                    } catch (NumberFormatException e) {
+                        tvDuration.setText(getString(R.string.misc_not_available));
+                    }
+
+                    loadMovieBackdrop(response.body().getBackdrop(backdropPath), movieBackdrop);
+                } else {
+                    int code = response.code();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TMDb.Movie> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     private void fetchMovieTrailers(final int movieID) {
-        if (TMDB.isDeviceConnected(mContext)) {
-            AndroidNetworking.get(TMDB.getMovieTrailers(movieID))
-                    .setPriority(Priority.MEDIUM)
-                    .build()
-                    .getAsJSONObject(new JSONObjectRequestListener() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            List<Movie> trailersList = new ArrayList<Movie>();
-                            try {
-                                JSONArray res = response.getJSONArray(getString(R.string.json_response_results));
-                                int length = res.length();
-                                if (length > 0) {
-                                    for (int i = 0; i < length; i++) {
-                                        JSONObject trailerObj = (JSONObject) res.get(i);
-                                        trailersList.add(
-                                                new Movie(
-                                                        movieID,
-                                                        trailerObj.getString("key")
-                                                )
-                                        );
-                                    }
-                                    allTrailers.addAll(trailersList);
-                                    trailersRecyclerView.setAdapter(mTrailersAdapter);
-                                    mTrailersAdapter.notifyItemRangeInserted(mTrailersAdapter.getItemCount(), allTrailers.size() - 1);
-                                } else {
-                                    toggleViewVisibility(tvNoTrailerFound);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+        if (TmdbUtils.connectionAvailable(mContext)) {
+            mService.getMovieTrailers(String.valueOf(movieID)).enqueue(new retrofit2.Callback<TMDbResponse.Trailers>() {
+                @Override
+                public void onResponse(Call<TMDbResponse.Trailers> call, retrofit2.Response<TMDbResponse.Trailers> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body().getTrailers().size() > 0) {
+                            allTrailers.addAll(response.body().getTrailers());
+                            updateRecycler(mTrailersAdapter, allTrailers);
+                        } else {
+                            toggleViewVisibility(tvNoTrailerFound);
                         }
+                    } else {
+                        int code = response.code();
+                    }
+                }
 
-                        @Override
-                        public void onError(ANError anError) {
-                            Log.d(TAG, anError.getMessage());
-                        }
-                    });
+                @Override
+                public void onFailure(Call<TMDbResponse.Trailers> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
         } else {
             toggleViewVisibility(tvNoTrailerFound);
         }
     }
 
     private void fetchMovieReviews(final int movieID) {
-        AndroidNetworking.get(TMDB.getMovieReviews(movieID))
-                .setPriority(Priority.MEDIUM)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            int totalPages = Integer.parseInt(response.getString(getString(R.string.json_response_review_total_page)));
-                            List<Movie.MovieReviews> movieReviewsList = new ArrayList<Movie.MovieReviews>();
-                            JSONArray res = response.getJSONArray(getString(R.string.json_response_results));
-                            int length = res.length();
-                            if (length > 0) {
-                                if (length > 3) length = 3;
-                                for (int i = 0; i < length; i++) {
-                                    JSONObject reviewObj = (JSONObject) res.get(i);
-                                    movieReviewsList.add(new Movie.MovieReviews(
-                                            reviewObj.getString(getString(R.string.json_response_review_author)),
-                                            reviewObj.getString(getString(R.string.json_response_review_content))
-                                    ));
-                                    Log.d(TAG, movieReviewsList.get(i).toString());
-                                }
-                                allReviews.addAll(movieReviewsList);
-                                reviewsRecylcerView.setAdapter(mReviewsAdapter);
-                                mReviewsAdapter.notifyItemRangeInserted(mReviewsAdapter.getItemCount(), allReviews.size() - 1);
-                                reviewResultContainer.setVisibility(View.VISIBLE);
-                            } else {
-                                List<View> viewsToToggle = new ArrayList<View>();
-                                viewsToToggle.add(reviewResultContainer);
-                                viewsToToggle.add(dividerTop);
-                                viewsToToggle.add(dividerBottom);
-                                viewsToToggle.add(btnShowAllReviews);
-                                viewsToToggle.add(tvNoReview);
+        if (TmdbUtils.connectionAvailable(mContext)) {
+            mService.getMovieReviews(String.valueOf(movieID)).enqueue(new retrofit2.Callback<TMDbResponse.Reviews>() {
+                @Override
+                public void onResponse(Call<TMDbResponse.Reviews> call, retrofit2.Response<TMDbResponse.Reviews> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body().getReviews().size() > 0) {
+                            if (response.body().getReviews().size() > 3)
+                                allReviews.addAll(response.body().getReviews().subList(0, 3));
+                            else allReviews.addAll(response.body().getReviews());
 
-                                toggleViewVisibility(viewsToToggle);
+                            updateRecycler(mReviewsAdapter, allReviews);
+                            toggleViewVisibility(reviewResultContainer);
 
-                                tvNoReview.setText(R.string.misc_no_review);
-                                tvNoReview.setGravity(Gravity.NO_GRAVITY);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        } else {
+                            List<View> viewsToToggle = new ArrayList<View>();
+                            viewsToToggle.add(reviewResultContainer);
+                            viewsToToggle.add(dividerTop);
+                            viewsToToggle.add(dividerBottom);
+                            viewsToToggle.add(btnShowAllReviews);
+                            viewsToToggle.add(tvNoReview);
+                            toggleViewVisibility(viewsToToggle);
                         }
+                    } else {
+                        int code = response.code();
                     }
+                }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.d(TAG, anError.getMessage());
-                    }
-                });
+                @Override
+                public void onFailure(Call<TMDbResponse.Reviews> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        } else {
+            toggleViewVisibility(tvNoReview);
+        }
     }
+
 
     private void toggleViewVisibility(View target) {
         if (target.getVisibility() == View.GONE || target.getVisibility() == View.INVISIBLE)
@@ -412,7 +375,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     // reveal animation
-    void revealAnimation(ImageView imageView, long duration) {
+    private void revealAnimation(ImageView imageView, long duration) {
         if (Build.VERSION.SDK_INT > 20) {
             int cx = (imageView.getLeft() + imageView.getRight()) / 2;
             int cy = (imageView.getTop() + imageView.getBottom()) / 2;
@@ -432,7 +395,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     // share movie with friends :)
-    public void shareMovie() {
+    private void shareMovie() {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType(getString(R.string.mime_type_text_document));
 

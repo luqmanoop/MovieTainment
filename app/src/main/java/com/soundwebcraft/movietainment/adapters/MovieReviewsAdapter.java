@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.soundwebcraft.movietainment.R;
-import com.soundwebcraft.movietainment.models.Movie;
+import com.soundwebcraft.movietainment.networking.models.TMDb;
 
 import java.util.List;
 
@@ -19,10 +19,10 @@ import butterknife.ButterKnife;
 
 
 public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapter.ReviewsViewHolder> {
-    private Context mContext;
-    private List<Movie.MovieReviews> mReviews;
+    private final Context mContext;
+    private final List<TMDb.Reviews> mReviews;
 
-    public MovieReviewsAdapter(Context context, List<Movie.MovieReviews> reviews) {
+    public MovieReviewsAdapter(Context context, List<TMDb.Reviews> reviews) {
         mContext = context;
         mReviews = reviews;
     }
@@ -38,7 +38,7 @@ public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapte
 
     @Override
     public void onBindViewHolder(MovieReviewsAdapter.ReviewsViewHolder holder, int position) {
-        Movie.MovieReviews review = mReviews.get(position);
+        TMDb.Reviews review = mReviews.get(position);
         TextView avatar = holder.avatar;
         TextView author = holder.author;
         TextView comment = holder.comment;
