@@ -10,4 +10,6 @@
 
     <include layout="@layout/empty_state_layout"/>
 
+    <include layout="@layout/progress_activity"/>
+
 </RelativeLayout>

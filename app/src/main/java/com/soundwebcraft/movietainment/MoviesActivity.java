@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.soundwebcraft.movietainment.adapters.MoviesAdapter;
@@ -47,7 +48,10 @@ public class MoviesActivity extends AppCompatActivity {
     TextView emptyViewTextView;
     @BindView(R.id.empty_view_iv)
     ImageView emptyViewImageView;
+    @BindView(R.id.loading_indicator)
+    ProgressBar loadingIndicator;
 
+    private boolean isLoading = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +93,10 @@ public class MoviesActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<TMDbResponse.Movies> call, retrofit2.Response<TMDbResponse.Movies> response) {
                 if (response.isSuccessful()) {
+                    if (isLoading) {
+                        loadingIndicator.setVisibility(View.GONE);
+                        isLoading = false;
+                    }
                     mMovies.addAll(response.body().getMovies());
                     AppUtils.updateRecycler(adapter, mMovies);
                     if (mMovies.size() <= 0) {

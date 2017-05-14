@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.soundwebcraft.movietainment.adapters.MovieReviewsAdapter;
@@ -42,6 +43,10 @@ public class ReviewsActivity extends AppCompatActivity {
     TextView emptyViewTextView;
     @BindView(R.id.empty_view_iv)
     ImageView emptyViewImageView;
+    @BindView(R.id.loading_indicator)
+    ProgressBar loadingIndicator;
+
+    private boolean isLoading = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +109,10 @@ public class ReviewsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<TMDbResponse.Reviews> call, retrofit2.Response<TMDbResponse.Reviews> response) {
                     if (response.isSuccessful()) {
+                        if (isLoading) {
+                            loadingIndicator.setVisibility(View.GONE);
+                            isLoading = false;
+                        }
                         allReviews.addAll(response.body().getReviews());
                         updateRecycler(adapter, allReviews);
                     } else {
