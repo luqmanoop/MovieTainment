@@ -10,15 +10,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.soundwebcraft.movietainment.adapters.MoviesAdapter;
 import com.soundwebcraft.movietainment.networking.data.remote.TmdbService;
-import com.soundwebcraft.movietainment.networking.models.TMDbResponse;
 import com.soundwebcraft.movietainment.networking.models.TMDb;
+import com.soundwebcraft.movietainment.networking.models.TMDbResponse;
 import com.soundwebcraft.movietainment.networking.utils.TmdbUtils;
-import com.soundwebcraft.movietainment.utils.EndlessRecyclerViewScrollListener;
 import com.soundwebcraft.movietainment.utils.AppUtils;
+import com.soundwebcraft.movietainment.utils.EmptyRecyclerView;
+import com.soundwebcraft.movietainment.utils.EndlessRecyclerViewScrollListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
+
+import static com.soundwebcraft.movietainment.networking.utils.TmdbUtils.emptyStateNoData;
+import static com.soundwebcraft.movietainment.networking.utils.TmdbUtils.emptyStateNoIntenet;
 
 public class MoviesActivity extends AppCompatActivity {
 
@@ -37,10 +42,11 @@ public class MoviesActivity extends AppCompatActivity {
 
     // hold reference to scrollListener
     private EndlessRecyclerViewScrollListener scrollListener;
-    @BindView(R.id.loadingPanel)
-    RelativeLayout loadingPanel;
 
-    private boolean loading = true;
+    @BindView(R.id.empty_view_tv)
+    TextView emptyViewTextView;
+    @BindView(R.id.empty_view_iv)
+    ImageView emptyViewImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +56,14 @@ public class MoviesActivity extends AppCompatActivity {
 
         mService = TmdbUtils.getTmdbService();
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_movies);
+        EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.rv_movies);
         adapter = new MoviesAdapter(mMovies, MoviesActivity.this);
 
         final StaggeredGridLayoutManager gridLayoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+
+        View emptyView = findViewById(R.id.empty_view);
+        recyclerView.setEmptyView(emptyView);
 
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(adapter);
@@ -62,12 +71,15 @@ public class MoviesActivity extends AppCompatActivity {
         scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                loading = false;
                 fetchMovies(page + 1);
             }
         };
         // fetch movies
-        fetchMovies(1);
+        if (TmdbUtils.connectionAvailable(this)) {
+            fetchMovies(1);
+        } else {
+            emptyStateNoIntenet(emptyViewImageView, emptyViewTextView, getString(R.string.no_internet));
+        }
         // listen for scroll
         recyclerView.addOnScrollListener(scrollListener);
     }
@@ -77,11 +89,11 @@ public class MoviesActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<TMDbResponse.Movies> call, retrofit2.Response<TMDbResponse.Movies> response) {
                 if (response.isSuccessful()) {
-                    if (loading) {
-                        toggleLoadingPanelVisibility();
-                    }
                     mMovies.addAll(response.body().getMovies());
                     AppUtils.updateRecycler(adapter, mMovies);
+                    if (mMovies.size() <= 0) {
+                        emptyStateNoData(emptyViewImageView, emptyViewTextView, getString(R.string.no_movie_data));
+                    }
 
                 } else {
                     int code = response.code();
@@ -124,7 +136,6 @@ public class MoviesActivity extends AppCompatActivity {
     // fetch movies by sort criteria
     private void fetchBySort(String string) {
         resetEndlessScroll();
-        toggleLoadingPanelVisibility();
         saveMovieSort(string);
         fetchMovies(1);
     }
@@ -135,15 +146,6 @@ public class MoviesActivity extends AppCompatActivity {
         scrollListener.resetState();
     }
 
-    private void toggleLoadingPanelVisibility() {
-        if (loadingPanel.getVisibility() == View.VISIBLE) {
-            loading = false;
-            loadingPanel.setVisibility(View.INVISIBLE);
-        } else {
-            loading = true;
-            loadingPanel.setVisibility(View.VISIBLE);
-        }
-    }
 
     private void saveMovieSort(String sort) {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);

@@ -7,35 +7,49 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.soundwebcraft.movietainment.adapters.MovieReviewsAdapter;
 import com.soundwebcraft.movietainment.networking.data.remote.TmdbService;
 import com.soundwebcraft.movietainment.networking.models.TMDb;
 import com.soundwebcraft.movietainment.networking.models.TMDbResponse;
 import com.soundwebcraft.movietainment.networking.utils.TmdbUtils;
+import com.soundwebcraft.movietainment.utils.EmptyRecyclerView;
 import com.soundwebcraft.movietainment.utils.EndlessRecyclerViewScrollListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 
+import static com.soundwebcraft.movietainment.networking.utils.TmdbUtils.emptyStateNoIntenet;
 import static com.soundwebcraft.movietainment.utils.AppUtils.updateRecycler;
 
 public class ReviewsActivity extends AppCompatActivity {
     public static final String TAG = ReviewsActivity.class.getSimpleName();
-    RecyclerView reviewsRecycler;
+    EmptyRecyclerView reviewsRecycler;
 
     private MovieReviewsAdapter adapter;
     private Context mContext;
     private TmdbService mService;
     private List<TMDb.Reviews> allReviews = new ArrayList<>();
 
+    @BindView(R.id.empty_view_tv)
+    TextView emptyViewTextView;
+    @BindView(R.id.empty_view_iv)
+    ImageView emptyViewImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reviews);
-        reviewsRecycler = (RecyclerView) findViewById(R.id.xxx);
+        ButterKnife.bind(this);
+
+        reviewsRecycler = (EmptyRecyclerView) findViewById(R.id.rv_reviews);
         final Intent otherIntent = getIntent();
         mContext = this;
         mService = TmdbUtils.getTmdbService();
@@ -45,6 +59,8 @@ public class ReviewsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        View emptyView = findViewById(R.id.empty_view);
+        reviewsRecycler.setEmptyView(emptyView);
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         reviewsRecycler.setLayoutManager(linearLayoutManager);
@@ -56,7 +72,11 @@ public class ReviewsActivity extends AppCompatActivity {
             String title = getDataFromBundle(otherIntent, MovieDetailActivity.MOVIE_TITLE);
             if (actionBar != null) actionBar.setTitle(title);
             String movieId = getDataFromBundle(otherIntent, MovieDetailActivity.MOVIE_ID);
-            fetchMovieReviews(movieId, 1);
+            if (TmdbUtils.connectionAvailable(this)) {
+                fetchMovieReviews(movieId, 1);
+            } else {
+                emptyStateNoIntenet(emptyViewImageView, emptyViewTextView, getString(R.string.no_internet));
+            }
 
         }
 
