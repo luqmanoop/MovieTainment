@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +22,17 @@ import butterknife.ButterKnife;
 public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapter.ReviewsViewHolder> {
     private final Context mContext;
     private final List<TMDb.Reviews> mReviews;
+    private boolean truncateUserReview = false;
 
     public MovieReviewsAdapter(Context context, List<TMDb.Reviews> reviews) {
         mContext = context;
         mReviews = reviews;
+    }
+
+    public MovieReviewsAdapter(Context context, List<TMDb.Reviews> reviews, boolean truncateUserReview) {
+        mContext = context;
+        mReviews = reviews;
+        this.truncateUserReview = truncateUserReview;
     }
 
     @Override
@@ -43,8 +51,14 @@ public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapte
         TextView author = holder.author;
         TextView comment = holder.comment;
 
+        if (truncateUserReview) {
+            comment.setMaxLines(3);
+            comment.setEllipsize(TextUtils.TruncateAt.END);
+        }
+
         author.setText(review.getAuthor());
         comment.setText(review.getContent());
+
 
         //get first letter of each String item
         String firstLetter = String.valueOf(review.getAuthor().charAt(0)).toUpperCase();

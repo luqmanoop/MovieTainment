@@ -33,7 +33,8 @@
     <string name="misc_no_trailer">No trailer available</string>
     <string name="misc_btn_all_review">VIEW ALL REVIEWS</string>
 
-    <string name="mime_type_text_document">text/plain</string><string name="date_format">%1$tB %1$te, %1$tY</string>
+    <string name="mime_type_text_document">text/plain</string>
+    <string name="date_format">%1$tB %1$te, %1$tY</string>
     <string name="menu_share">Share</string>
     <string name="shared_preference_key">sort</string>
     <string name="youtube_play_btn">play</string>

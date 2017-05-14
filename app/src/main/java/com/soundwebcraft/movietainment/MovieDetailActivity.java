@@ -40,6 +40,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 import retrofit2.Call;
 
@@ -50,6 +51,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     public static final String TAG = MovieDetailActivity.class.getSimpleName();
     private static final String IMDB_MOVIE_PREVIEW = "http://www.imdb.com/title/";
+    public static final String MOVIE_TITLE = "TITLE";
+    public static final String MOVIE_ID = "ID";
 
     @BindView(R.id.movie_title)
     TextView tvMovieTitle;
@@ -85,7 +88,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     View dividerBottom;
     @BindView(R.id.tv_no_review)
     TextView tvNoReview;
-    @BindView(R.id.bt_show_all_reviews)
+    @BindView(R.id.btn_show_all_reviews)
     Button btnShowAllReviews;
     @BindView(R.id.rv_movie_trailers)
     RecyclerView trailersRecyclerView;
@@ -101,6 +104,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private String imdb_id = null,
             posterLowRes = null,
             movieTitle = null;
+    int movieid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +129,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
         mTrailersAdapter = new MovieTrailersAdapter(mContext, allTrailers);
-        mReviewsAdapter = new MovieReviewsAdapter(mContext, allReviews);
+        mReviewsAdapter = new MovieReviewsAdapter(mContext, allReviews, true);
 
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
@@ -150,7 +154,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             String posterHighRes = movie.getPoster(true);
             String movieReleased = movie.getFormattedReleaseDate();
             String movieRatings = movie.caculateRatings(movie.getVoteAverage());
-            int movieid = 0;
             movieid = movie.getId();
 
             if (movieid > 0) fetchMovieDetails(movieid);
@@ -160,7 +163,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             // fetch movie trailers
             fetchMovieTrailers(movieid);
             // fetch movie reviews
-            fetchMovieReviews(movieid);
+            fetchMovieReviews(movieid, 1);
 
             tvMovieTitle.setText(movieTitle);
             mTextViewOverviewTitle.setText(getString(R.string.overview));
@@ -190,6 +193,17 @@ public class MovieDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @OnClick(R.id.btn_show_all_reviews)
+    public void launchReviewsActivity () {
+        Intent intent = new Intent(MovieDetailActivity.this, ReviewsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(MOVIE_TITLE, movieTitle);
+        bundle.putInt(MOVIE_ID, movieid);
+
+        intent.putExtras(bundle);
+
+        startActivity(intent);
+    }
     // run slide animation on movie sypnosis
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void slideAnimation() {
@@ -320,9 +334,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchMovieReviews(final int movieID) {
+    private void fetchMovieReviews(final int movieID, int page) {
         if (TmdbUtils.connectionAvailable(mContext)) {
-            mService.getMovieReviews(String.valueOf(movieID)).enqueue(new retrofit2.Callback<TMDbResponse.Reviews>() {
+            mService.getMovieReviews(String.valueOf(movieID), String.valueOf(page)).enqueue(new retrofit2.Callback<TMDbResponse.Reviews>() {
                 @Override
                 public void onResponse(Call<TMDbResponse.Reviews> call, retrofit2.Response<TMDbResponse.Reviews> response) {
                     if (response.isSuccessful()) {
@@ -357,7 +371,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             toggleViewVisibility(tvNoReview);
         }
     }
-
 
     private void toggleViewVisibility(View target) {
         if (target.getVisibility() == View.GONE || target.getVisibility() == View.INVISIBLE)

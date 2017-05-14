@@ -17,7 +17,7 @@ public interface TmdbService {
     Call<TMDb.Movie> getMovie(@Path("id") String id);
 
     @GET("{id}/reviews?api_key=" + BuildConfig.API_KEY)
-    Call<TMDbResponse.Reviews> getMovieReviews(@Path("id") String id);
+    Call<TMDbResponse.Reviews> getMovieReviews(@Path("id") String id, @Query("page") String page);
 
     @GET("{id}/videos?api_key=" + BuildConfig.API_KEY)
     Call<TMDbResponse.Trailers> getMovieTrailers(@Path("id") String id);

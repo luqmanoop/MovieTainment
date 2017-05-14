@@ -46,8 +46,6 @@
             app:layout_constraintLeft_toLeftOf="@+id/author"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/author"
-            android:maxLines="3"
-            android:ellipsize="end"
             tools:text="Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam id dolor id nibh ultricies vehicula ut id elit. Etiam porta sem malesuada magna mollis euismod."/>
 
     </android.support.constraint.ConstraintLayout>

@@ -21,10 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".MovieDetailActivity"
+        <activity
+            android:name=".MovieDetailActivity"
             android:parentActivityName=".MoviesActivity"
-                  android:theme="@style/MovieDetailTheme"
-            >
+            android:theme="@style/MovieDetailTheme">
+        </activity>
+        <activity android:name=".ReviewsActivity">
         </activity>
     </application>
 
