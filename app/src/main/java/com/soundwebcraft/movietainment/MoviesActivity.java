@@ -1,6 +1,7 @@
 package com.soundwebcraft.movietainment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -52,6 +53,7 @@ public class MoviesActivity extends AppCompatActivity {
     ProgressBar loadingIndicator;
 
     private boolean isLoading = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,6 +139,9 @@ public class MoviesActivity extends AppCompatActivity {
                 }
                 fetchBySort(getString(R.string.sort_by_top_rated));
                 return true;
+            case R.id.by_favorites:
+                startActivity(new Intent(this, FavoritesActivity.class));
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group
-        android:id="@+id/group_delete">
-        <item android:id="@+id/by_popularity"
-              android:title="@string/by_popularity" />
-        <item android:id="@+id/by_ratings"
-              android:title="@string/by_ratings" />
-    </group>
-
+    <item
+        android:orderInCategory="1"
+        android:id="@+id/by_popularity"
+        android:title="@string/by_popularity"/>
+    <item
+        android:orderInCategory="2"
+        android:id="@+id/by_ratings"
+        android:title="@string/by_ratings"/>
+    <item android:id="@+id/by_favorites"
+          android:orderInCategory="3"
+          android:title="@string/menu_favorites"/>
 </menu>

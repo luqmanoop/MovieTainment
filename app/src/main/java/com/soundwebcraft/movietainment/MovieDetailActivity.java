@@ -1,11 +1,14 @@
 package com.soundwebcraft.movietainment;
 
 import android.animation.Animator;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,6 +47,9 @@ import butterknife.OnClick;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 import retrofit2.Call;
 
+import static com.soundwebcraft.movietainment.db.FavoritesContract.FavoritesEntry.BASE_CONTENT_URI;
+import static com.soundwebcraft.movietainment.db.FavoritesContract.FavoritesEntry.COLUMN_TITLE;
+import static com.soundwebcraft.movietainment.db.FavoritesContract.FavoritesEntry._ID;
 import static com.soundwebcraft.movietainment.utils.AppUtils.updateRecycler;
 import static com.squareup.picasso.Picasso.with;
 
@@ -105,7 +111,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             posterLowRes = null,
             movieTitle = null;
     int movieid;
-
+    ContentResolver mContentResolver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +125,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         mPicasso = with(mContext);
         mPicasso.setIndicatorsEnabled(false);
+        mContentResolver = getContentResolver();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -444,5 +451,15 @@ public class MovieDetailActivity extends AppCompatActivity {
             sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         }
         startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_intent_title)));
+    }
+
+
+    @OnClick(R.id.fab_favorite)
+    void addToFavorite () {
+        ContentValues values = new ContentValues();
+        values.put(_ID, movieid);
+        values.put(COLUMN_TITLE, movieTitle);
+        mContentResolver.insert(BASE_CONTENT_URI, values);
+        Snackbar.make(moviePoster, "Added to favorites", Snackbar.LENGTH_LONG).show();
     }
 }

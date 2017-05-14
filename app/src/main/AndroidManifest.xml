@@ -28,6 +28,14 @@
         </activity>
         <activity android:name=".ReviewsActivity">
         </activity>
+
+        <provider
+            android:name=".db.FavoritesProvider"
+            android:authorities="com.soundwebcraft.movietainment.db.favoritesprovider"
+            android:exported="false"/>
+
+        <activity android:name=".FavoritesActivity">
+        </activity>
     </application>
 
 </manifest>
