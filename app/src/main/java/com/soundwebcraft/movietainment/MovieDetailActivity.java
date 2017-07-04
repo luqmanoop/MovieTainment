@@ -112,6 +112,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             movieTitle = null;
     int movieid;
     ContentResolver mContentResolver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -201,7 +202,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.btn_show_all_reviews)
-    public void launchReviewsActivity () {
+    public void launchReviewsActivity() {
         Intent intent = new Intent(MovieDetailActivity.this, ReviewsActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(MOVIE_TITLE, movieTitle);
@@ -211,6 +212,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         startActivity(intent);
     }
+
     // run slide animation on movie sypnosis
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void slideAnimation() {
@@ -281,10 +283,13 @@ public class MovieDetailActivity extends AppCompatActivity {
                     imdb_id = response.body().getImdbId();
                     Integer runtime = response.body().getRuntime();
                     String genres = "";
+                    int length = response.body().getGenres().size();
+                    int counter = 1;
                     for (TMDb.Genre genre :
                             response.body().getGenres()) {
-                        genres += genre.getName() + ", ";
-
+                        if (counter != length) genres += genre.getName() + ", ";
+                        else genres += genre.getName();
+                        counter++;
                     }
                     if (!TextUtils.isEmpty(genres)) mGenres.setText(genres);
                     else mGenres.setText(R.string.misc_not_available);
@@ -455,7 +460,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
 
     @OnClick(R.id.fab_favorite)
-    void addToFavorite () {
+    void addToFavorite() {
         ContentValues values = new ContentValues();
         values.put(_ID, movieid);
         values.put(COLUMN_TITLE, movieTitle);
