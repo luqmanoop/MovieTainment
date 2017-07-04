@@ -3,6 +3,9 @@ An app to help users discover popular and recent movies.
 
 This app is part of the weekly challenges in the **Associate Android Developer Fast Track** course offered by [Udacity](https://udacity.com) & **Google** courtesy of [Andela](https://andela.com).
 
+
+![Movie detail screenshot](screenshots/screenshot.png "Movie Detail Activity")
+
 ## Requirements
 Valid api key from [The Movie DB (TMDb)](https://www.themoviedb.org)
 
