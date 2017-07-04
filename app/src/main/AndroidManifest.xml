@@ -34,7 +34,8 @@
             android:authorities="com.soundwebcraft.movietainment.db.favoritesprovider"
             android:exported="false"/>
 
-        <activity android:name=".FavoritesActivity">
+        <activity android:name=".FavoritesActivity"
+            android:parentActivityName=".MoviesActivity">
         </activity>
     </application>
 
