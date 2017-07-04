@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+                android:id="@+id/movies_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <com.soundwebcraft.movietainment.utils.EmptyRecyclerView
         android:id="@+id/rv_movies"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        android:columnWidth="125dp"/>
 
     <include layout="@layout/empty_state_layout"/>
 
